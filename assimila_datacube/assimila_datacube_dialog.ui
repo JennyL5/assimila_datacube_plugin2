@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Dialog</class>
+ <widget class="QDialog" name="Dialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>553</width>
+    <height>567</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <widget class="QDialogButtonBox" name="buttonBox">
+   <property name="geometry">
+    <rect>
+     <x>320</x>
+     <y>460</y>
+     <width>201</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <property name="standardButtons">
+    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="product_label">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>40</y>
+     <width>55</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Product</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>300</x>
+     <y>40</y>
+     <width>91</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Sub Product</string>
+   </property>
+  </widget>
+  <widget class="QToolButton" name="btn_browse_keyfile">
+   <property name="geometry">
+    <rect>
+     <x>60</x>
+     <y>490</y>
+     <width>121</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Browse for keyfile...</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>60</x>
+     <y>450</y>
+     <width>81</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Keyfile location</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEdit">
+   <property name="geometry">
+    <rect>
+     <x>60</x>
+     <y>466</y>
+     <width>201</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="products_comboBox">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>60</y>
+     <width>181</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="currentText">
+    <string/>
+   </property>
+   <property name="currentIndex">
+    <number>-1</number>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="subproducts_comboBox">
+   <property name="geometry">
+    <rect>
+     <x>300</x>
+     <y>60</y>
+     <width>181</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="N_spinBox">
+   <property name="geometry">
+    <rect>
+     <x>210</x>
+     <y>140</y>
+     <width>71</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="minimum">
+    <number>-90</number>
+   </property>
+   <property name="maximum">
+    <number>90</number>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_5">
+   <property name="geometry">
+    <rect>
+     <x>210</x>
+     <y>120</y>
+     <width>91</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>North</string>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="W_spinBox">
+   <property name="geometry">
+    <rect>
+     <x>120</x>
+     <y>190</y>
+     <width>71</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="minimum">
+    <number>-180</number>
+   </property>
+   <property name="maximum">
+    <number>180</number>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_7">
+   <property name="geometry">
+    <rect>
+     <x>120</x>
+     <y>170</y>
+     <width>91</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>West</string>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="E_spinBox">
+   <property name="geometry">
+    <rect>
+     <x>300</x>
+     <y>190</y>
+     <width>71</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="minimum">
+    <number>-180</number>
+   </property>
+   <property name="maximum">
+    <number>180</number>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_8">
+   <property name="geometry">
+    <rect>
+     <x>300</x>
+     <y>170</y>
+     <width>91</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>East</string>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="S_spinBox">
+   <property name="geometry">
+    <rect>
+     <x>210</x>
+     <y>250</y>
+     <width>71</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="minimum">
+    <number>-90</number>
+   </property>
+   <property name="maximum">
+    <number>90</number>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btn_extent">
+   <property name="geometry">
+    <rect>
+     <x>420</x>
+     <y>250</y>
+     <width>101</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Set canvas extent</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_6">
+   <property name="geometry">
+    <rect>
+     <x>210</x>
+     <y>230</y>
+     <width>91</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>South</string>
+   </property>
+  </widget>
+  <widget class="QDateTimeEdit" name="dateTimeEdit_1">
+   <property name="geometry">
+    <rect>
+     <x>60</x>
+     <y>380</y>
+     <width>171</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="maximumDateTime">
+    <datetime>
+     <hour>23</hour>
+     <minute>59</minute>
+     <second>59</second>
+     <year>2019</year>
+     <month>7</month>
+     <day>31</day>
+    </datetime>
+   </property>
+   <property name="minimumDateTime">
+    <datetime>
+     <hour>0</hour>
+     <minute>0</minute>
+     <second>0</second>
+     <year>2000</year>
+     <month>1</month>
+     <day>1</day>
+    </datetime>
+   </property>
+   <property name="currentSection">
+    <enum>QDateTimeEdit::DaySection</enum>
+   </property>
+   <property name="displayFormat">
+    <string>dd/MM/yyyy HH</string>
+   </property>
+   <property name="calendarPopup">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>60</x>
+     <y>360</y>
+     <width>91</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Date and hour</string>
+   </property>
+  </widget>
+  <widget class="QDateTimeEdit" name="dateTimeEdit_2">
+   <property name="geometry">
+    <rect>
+     <x>290</x>
+     <y>380</y>
+     <width>171</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="maximumDateTime">
+    <datetime>
+     <hour>23</hour>
+     <minute>59</minute>
+     <second>59</second>
+     <year>2019</year>
+     <month>7</month>
+     <day>31</day>
+    </datetime>
+   </property>
+   <property name="minimumDateTime">
+    <datetime>
+     <hour>0</hour>
+     <minute>0</minute>
+     <second>0</second>
+     <year>2000</year>
+     <month>1</month>
+     <day>1</day>
+    </datetime>
+   </property>
+   <property name="currentSection">
+    <enum>QDateTimeEdit::DaySection</enum>
+   </property>
+   <property name="displayFormat">
+    <string>dd/MM/yyyy HH</string>
+   </property>
+   <property name="calendarPopup">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_4">
+   <property name="geometry">
+    <rect>
+     <x>290</x>
+     <y>360</y>
+     <width>91</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Date and hour</string>
+   </property>
+  </widget>
+  <widget class="QRadioButton" name="multi_radioButton">
+   <property name="geometry">
+    <rect>
+     <x>270</x>
+     <y>310</y>
+     <width>151</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Multitime (limit to 30 days)</string>
+   </property>
+  </widget>
+  <widget class="QRadioButton" name="single_radioButton">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>310</y>
+     <width>95</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Single time</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>Dialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>Dialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

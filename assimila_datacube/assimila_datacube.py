@@ -23,7 +23,10 @@
 """
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QAction
+from qgis.PyQt.QtWidgets import QAction, QFileDialog
+from qgis.core import QgsProject, Qgis
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QMessageBox
+
 
 # Initialize Qt resources from file resources.py
 from .resources import *
@@ -43,6 +46,7 @@ class AssimilaDatacCube:
             application at run time.
         :type iface: QgsInterface
         """
+
         # Save reference to the QGIS interface
         self.iface = iface
         # initialize plugin directory
@@ -59,6 +63,9 @@ class AssimilaDatacCube:
             self.translator.load(locale_path)
             QCoreApplication.installTranslator(self.translator)
 
+            if qVersion() > '4.3.3':
+                QCoreApplication.installTranslator(self.translator)
+
         # Declare instance attributes
         self.actions = []
         self.menu = self.tr(u'&Assimila Data Cube')
@@ -66,6 +73,8 @@ class AssimilaDatacCube:
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
         self.first_start = None
+        self.dlg = AssimilaDatacCubeDialog()
+
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -180,8 +189,47 @@ class AssimilaDatacCube:
             self.iface.removeToolBarIcon(action)
 
 
+    def check(self, north, east, south, west, start, end):
+        if str(end) < str(start):
+            raise ValueError('End date should not be before start date')
+
+        if east != 0 and west != 0 and east < west:
+            raise ValueError('East value should be greater than west')
+
+        if north != 0 and south != 0 and north < south:
+            raise ValueError('North value should be greater than south')
+    
+    def subproduct_selectionchange(self):
+        self.dlg.subproducts_comboBox.clear()
+        if str(self.dlg.products_comboBox.currentText()) == 'TAMSAT' or str(self.dlg. products_comboBox.currentText()) == 'CHIRPS':
+            subproducts = ['rfe']
+        else:
+            subproducts = ['skt', 't2m', 'skt_ensemble_mean', 'land_sea_mask', 't2m_ensemble_spread', 't2m_ensemble_mean', 'skt_ensemble_spread']
+        self.dlg.subproducts_comboBox.addItems(subproducts) 
+    
+    def btnstate(self,b, dt1, dt2):
+
+        if b.isChecked() == True:
+            dt1.setDisabled(False)
+            dt2.setDisabled(True)
+            #print (b.text()+" is selected")
+        else:
+            dt1.setDisabled(False)
+            dt2.setDisabled(False)
+            #print (b.text()+" is deselected")
+
     def run(self):
         """Run method that performs all the real work"""
+        #self.dlg.products_comboBox.clear()
+
+        # Display dropdowns
+        products = ['TAMSAT', 'CHIRPS', 'era5']
+        self.dlg.products_comboBox.addItems(products)
+        self.dlg.products_comboBox.currentTextChanged.connect(self.subproduct_selectionchange)
+
+        #radio buttons and date
+        self.dlg.multi_radioButton.toggled.connect(lambda: self.btnstate(self.dlg.single_radioButton, self.dlg.dateTimeEdit_1, self.dlg.dateTimeEdit_2))
+
 
         # Create the dialog with elements (after translation) and keep reference
         # Only create GUI ONCE in callback, so that it will only load when the plugin is started
@@ -197,6 +245,23 @@ class AssimilaDatacCube:
         if result:
             # Do something useful here - delete the line containing pass and
             # substitute with your code.
+            north = self.dlg.N_spinBox.value()
+            east = self.dlg.E_spinBox.value()
+            south = self.dlg.S_spinBox.value()
+            west = self.dlg.W_spinBox.value()
+            start = self.dlg.dateTimeEdit_1.date()
+            end = self.dlg.dateTimeEdit_2.date()
+            self.check(north, east, south, west, start, end)
+            print(north)
+
+           # print (str(north) + str(east))
+#            msg = QMessageBox()
+#            msg.setIcon(QMessageBox.Information)
+#            msg.setText("This is a message box")
+#            msg.setInformativeText("This is additional information")
+#            msg.setWindowTitle("MessageBox demo")
+#            msg.setDetailedText("The details are as follows:")
+
             pass
 
             
