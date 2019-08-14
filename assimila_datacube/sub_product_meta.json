@@ -1,0 +1,15 @@
+    {
+      "idsubproduct": "INT",
+      "name": "TEXT",
+      "longname": "TEXT",
+      "description": "TEXT",
+      "units": "TEXT",
+      "minvalue": "REAL",
+      "maxvalue": "REAL",
+      "keywords": "TEXT",
+      "link": "TEXT",
+      "datascalefactor" : "REAL",
+      "dataoffset" : "REAL",
+      "datafillvalue": "REAL",
+      "idproduct": "INT"
+    }

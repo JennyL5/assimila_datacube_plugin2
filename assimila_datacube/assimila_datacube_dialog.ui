@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>553</width>
-    <height>567</height>
+    <height>517</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,8 +16,8 @@
   <widget class="QDialogButtonBox" name="buttonBox">
    <property name="geometry">
     <rect>
-     <x>320</x>
-     <y>460</y>
+     <x>330</x>
+     <y>440</y>
      <width>201</width>
      <height>61</height>
     </rect>
@@ -58,14 +58,14 @@
   <widget class="QToolButton" name="btn_browse_keyfile">
    <property name="geometry">
     <rect>
-     <x>60</x>
-     <y>490</y>
-     <width>121</width>
+     <x>270</x>
+     <y>460</y>
+     <width>31</width>
      <height>31</height>
     </rect>
    </property>
    <property name="text">
-    <string>Browse for keyfile...</string>
+    <string>...</string>
    </property>
   </widget>
   <widget class="QLabel" name="label">
@@ -73,7 +73,7 @@
     <rect>
      <x>60</x>
      <y>450</y>
-     <width>81</width>
+     <width>121</width>
      <height>16</height>
     </rect>
    </property>
@@ -85,9 +85,9 @@
    <property name="geometry">
     <rect>
      <x>60</x>
-     <y>466</y>
+     <y>470</y>
      <width>201</width>
-     <height>20</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>
@@ -99,6 +99,12 @@
      <width>181</width>
      <height>21</height>
     </rect>
+   </property>
+   <property name="focusPolicy">
+    <enum>Qt::WheelFocus</enum>
+   </property>
+   <property name="contextMenuPolicy">
+    <enum>Qt::ActionsContextMenu</enum>
    </property>
    <property name="currentText">
     <string/>
@@ -117,27 +123,11 @@
     </rect>
    </property>
   </widget>
-  <widget class="QSpinBox" name="N_spinBox">
-   <property name="geometry">
-    <rect>
-     <x>210</x>
-     <y>140</y>
-     <width>71</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="minimum">
-    <number>-90</number>
-   </property>
-   <property name="maximum">
-    <number>90</number>
-   </property>
-  </widget>
   <widget class="QLabel" name="label_5">
    <property name="geometry">
     <rect>
-     <x>210</x>
-     <y>120</y>
+     <x>200</x>
+     <y>130</y>
      <width>91</width>
      <height>16</height>
     </rect>
@@ -146,27 +136,11 @@
     <string>North</string>
    </property>
   </widget>
-  <widget class="QSpinBox" name="W_spinBox">
-   <property name="geometry">
-    <rect>
-     <x>120</x>
-     <y>190</y>
-     <width>71</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="minimum">
-    <number>-180</number>
-   </property>
-   <property name="maximum">
-    <number>180</number>
-   </property>
-  </widget>
   <widget class="QLabel" name="label_7">
    <property name="geometry">
     <rect>
-     <x>120</x>
-     <y>170</y>
+     <x>100</x>
+     <y>180</y>
      <width>91</width>
      <height>16</height>
     </rect>
@@ -175,27 +149,11 @@
     <string>West</string>
    </property>
   </widget>
-  <widget class="QSpinBox" name="E_spinBox">
-   <property name="geometry">
-    <rect>
-     <x>300</x>
-     <y>190</y>
-     <width>71</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="minimum">
-    <number>-180</number>
-   </property>
-   <property name="maximum">
-    <number>180</number>
-   </property>
-  </widget>
   <widget class="QLabel" name="label_8">
    <property name="geometry">
     <rect>
      <x>300</x>
-     <y>170</y>
+     <y>180</y>
      <width>91</width>
      <height>16</height>
     </rect>
@@ -204,29 +162,13 @@
     <string>East</string>
    </property>
   </widget>
-  <widget class="QSpinBox" name="S_spinBox">
-   <property name="geometry">
-    <rect>
-     <x>210</x>
-     <y>250</y>
-     <width>71</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="minimum">
-    <number>-90</number>
-   </property>
-   <property name="maximum">
-    <number>90</number>
-   </property>
-  </widget>
   <widget class="QPushButton" name="btn_extent">
    <property name="geometry">
     <rect>
-     <x>420</x>
-     <y>250</y>
-     <width>101</width>
-     <height>21</height>
+     <x>400</x>
+     <y>260</y>
+     <width>121</width>
+     <height>31</height>
     </rect>
    </property>
    <property name="text">
@@ -255,6 +197,16 @@
      <height>31</height>
     </rect>
    </property>
+   <property name="dateTime">
+    <datetime>
+     <hour>6</hour>
+     <minute>0</minute>
+     <second>0</second>
+     <year>2000</year>
+     <month>1</month>
+     <day>1</day>
+    </datetime>
+   </property>
    <property name="maximumDateTime">
     <datetime>
      <hour>23</hour>
@@ -279,7 +231,7 @@
     <enum>QDateTimeEdit::DaySection</enum>
    </property>
    <property name="displayFormat">
-    <string>dd/MM/yyyy HH</string>
+    <string>dd/MM/yyyy HH:00:00</string>
    </property>
    <property name="calendarPopup">
     <bool>true</bool>
@@ -298,14 +250,112 @@
     <string>Date and hour</string>
    </property>
   </widget>
-  <widget class="QDateTimeEdit" name="dateTimeEdit_2">
+  <widget class="QLabel" name="label_4">
    <property name="geometry">
     <rect>
      <x>290</x>
+     <y>360</y>
+     <width>91</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Date and hour</string>
+   </property>
+  </widget>
+  <widget class="QRadioButton" name="multi_radioButton">
+   <property name="geometry">
+    <rect>
+     <x>290</x>
+     <y>310</y>
+     <width>201</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Multi time (limit to 30 days)</string>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QRadioButton" name="single_radioButton">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>310</y>
+     <width>95</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Single time</string>
+   </property>
+  </widget>
+  <widget class="QDoubleSpinBox" name="W_spinBox">
+   <property name="geometry">
+    <rect>
+     <x>100</x>
+     <y>200</y>
+     <width>81</width>
+     <height>41</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QDoubleSpinBox" name="N_spinBox">
+   <property name="geometry">
+    <rect>
+     <x>200</x>
+     <y>150</y>
+     <width>81</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="value">
+    <double>10.050000000000001</double>
+   </property>
+  </widget>
+  <widget class="QDoubleSpinBox" name="S_spinBox">
+   <property name="geometry">
+    <rect>
+     <x>200</x>
+     <y>250</y>
+     <width>81</width>
+     <height>41</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QDoubleSpinBox" name="E_spinBox">
+   <property name="geometry">
+    <rect>
+     <x>300</x>
+     <y>200</y>
+     <width>81</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="value">
+    <double>10.000000000000000</double>
+   </property>
+  </widget>
+  <widget class="QDateTimeEdit" name="dateTimeEdit_2">
+   <property name="geometry">
+    <rect>
+     <x>280</x>
      <y>380</y>
      <width>171</width>
      <height>31</height>
     </rect>
+   </property>
+   <property name="dateTime">
+    <datetime>
+     <hour>18</hour>
+     <minute>0</minute>
+     <second>0</second>
+     <year>2000</year>
+     <month>1</month>
+     <day>2</day>
+    </datetime>
    </property>
    <property name="maximumDateTime">
     <datetime>
@@ -331,49 +381,10 @@
     <enum>QDateTimeEdit::DaySection</enum>
    </property>
    <property name="displayFormat">
-    <string>dd/MM/yyyy HH</string>
+    <string>dd/MM/yyyy HH:00:00</string>
    </property>
    <property name="calendarPopup">
     <bool>true</bool>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_4">
-   <property name="geometry">
-    <rect>
-     <x>290</x>
-     <y>360</y>
-     <width>91</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Date and hour</string>
-   </property>
-  </widget>
-  <widget class="QRadioButton" name="multi_radioButton">
-   <property name="geometry">
-    <rect>
-     <x>270</x>
-     <y>310</y>
-     <width>151</width>
-     <height>21</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Multitime (limit to 30 days)</string>
-   </property>
-  </widget>
-  <widget class="QRadioButton" name="single_radioButton">
-   <property name="geometry">
-    <rect>
-     <x>80</x>
-     <y>310</y>
-     <width>95</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Single time</string>
    </property>
   </widget>
  </widget>

@@ -21,13 +21,15 @@
  *                                                                         *
  ***************************************************************************/
 """
+import math,  os,  tempfile
 
-import os, tempfile
-
+from qgis.core import *
 from qgis.PyQt import uic
+from qgis.PyQt import QtNetwork
+from qgis.PyQt.QtCore import pyqtSlot,  Qt,  QUrl,  QFileInfo
+from qgis.PyQt.QtGui import QIntValidator
+from qgis.PyQt.QtWidgets import *
 from qgis.PyQt import QtWidgets
-from qgis.PyQt.QtCore import pyqtSlot
-from PyQt5.QtWidgets import QFileDialog
 
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
@@ -36,17 +38,16 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 
 class AssimilaDatacCubeDialog(QtWidgets.QDialog, FORM_CLASS):
-    def __init__(self, parent=None):
+    def __init__(self, iface, parent=None):
         """Constructor."""
-        super(AssimilaDatacCubeDialog, self).__init__(parent)
         # Set up the user interface from Designer through FORM_CLASS.
         # After self.setupUi() you can access any designer object by doing
         # self.<objectname>, and you can use autoconnect slots - see
         # http://qt-project.org/doc/qt-4.8/designer-using-a-ui-file.html
         # #widgets-and-dialogs-with-auto-connect
+        super(AssimilaDatacCubeDialog, self).__init__(parent)
         self.setupUi(self)
-        self.dir = tempfile.gettempdir()
-
+        self.iface = iface
 
 
     @pyqtSlot()
@@ -54,6 +55,10 @@ class AssimilaDatacCubeDialog(QtWidgets.QDialog, FORM_CLASS):
         """
         Slot documentation goes here.
         """
+        from qgis.core import (QgsProcessingParameterString,)
+        from qgis.PyQt.QtNetwork import QNetworkRequest, QNetworkReply,  QNetworkAccessManager
+
+
         crsDest = QgsCoordinateReferenceSystem(4326)  # WGS84
         crsSrc =self.iface.mapCanvas().mapSettings().destinationCrs()
         xform = QgsCoordinateTransform()
@@ -62,12 +67,54 @@ class AssimilaDatacCubeDialog(QtWidgets.QDialog, FORM_CLASS):
             
         extent = xform.transform(self.iface.mapCanvas().extent())        
 
-        self.lne_west.setText(str(int(math.floor(extent.xMinimum()))))
-        self.lne_east.setText(str(math.ceil(extent.xMaximum())))
-        self.lne_south.setText(str(int(math.floor(extent.yMinimum()))))
-        self.lne_north.setText(str(math.ceil(extent.yMaximum())))
+        self.W_spinBox.setValue((int(math.floor(extent.xMinimum()))))
+        self.E_spinBox.setValue((math.ceil(extent.xMaximum())))
+        self.S_spinBox.setValue((int(math.floor(extent.yMinimum()))))
+        self.N_spinBox.setValue((math.ceil(extent.yMaximum())))
         print('set canvas')
 
+    def get_tiles(self):
+        lat_diff = abs(int(self.N_spinBox.value()) - int(self.S_spinBox.value()))
+        lon_diff = abs(int(self.E_spinBox.value()) - int(self.W_spinBox.valuet()))
+        self.n_tiles = lat_diff * lon_diff
+        self.image_counter = 0
+        
+        for lat in range(int(self.S_spinBox.value()), int(self.N_spinBox.value())):
+            for lon in range(int(self.W_spinBox.value()), int(self.E_spinBox.value())):
+                    if lon < 10 and lon >= 0:
+                        lon_tx = "E00%s" % lon
+                    elif lon >= 10 and lon < 100:
+                        lon_tx = "E0%s" % lon
+                    elif lon >= 100:
+                        lon_tx = "E%s" % lon
+                    elif lon > -10 and lon < 0:
+                        lon_tx = "W00%s" % abs(lon)
+                    elif lon <= -10 and lon > -100:
+                        lon_tx = "W0%s" % abs(lon)
+                    elif lon <= -100:
+                        lon_tx = "W%s" % abs(lon)
+
+                    if lat < 10 and lat >= 0:
+                        lat_tx = "N0%s" % lat
+                    elif lat >= 10 and lat < 100:
+                        lat_tx = "N%s" % lat
+                    elif lat > -10 and lat < 0:
+                        lat_tx = "S0%s" % abs(lat)
+                    elif lat < -10 and lat > -100:
+                        lat_tx = "S%s" % abs(lat)
+                    
+                    url = "https://e4ftl01.cr.usgs.gov//MODV6_Dal_D/SRTM/SRTMGL1.003/2000.02.11/%s%s.SRTMGL1.hgt.zip" % (lat_tx, lon_tx)
+                    file = "%s/%s" % (self.dir,  url.split('/')[len(url.split('/'))-1])
+                    
+                    if not self.downloader.layer_exists('%s%s.hgt' % (lat_tx,  lon_tx)): 
+                        if self.chk_load_image.checkState() == Qt.Checked:
+                            self.downloader.get_image(url,  file, lat_tx, lon_tx, True)
+                        else:
+                            self.downloader.get_image(url,  file, lat_tx, lon_tx, False)
+                    else:
+                        self.set_progress()
+                        self.download_finished(False)
+        return True
 
     def coordinates_valid(self,  text):
         
@@ -80,10 +127,10 @@ class AssimilaDatacCubeDialog(QtWidgets.QDialog, FORM_CLASS):
     def on_btn_browse_keyfile_clicked(self):
         print('get directory')
         from os.path import expanduser
-        home = expanduser("~")
         self.dir = QFileDialog.getExistingDirectory(None, self.tr("Open Directory"),
-                                                    "/Users/Jenny/Downloads",
+                                                    #"/Users/Jenny/Documents/",
+                                                    os.path.join(expanduser("~"), "Documents"),
                                                     QFileDialog.ShowDirsOnly 
                                                     | QFileDialog.DontResolveSymlinks)
-
-        self.lineEdit.setText(self.dir)   
+        self.key_file = os.path.join(self.dir, ".assimila_dq")                                    
+        self.lineEdit.setText(self.key_file)   

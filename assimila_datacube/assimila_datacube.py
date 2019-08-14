@@ -26,7 +26,7 @@ from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QFileDialog
 from qgis.core import QgsProject, Qgis
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QMessageBox
-
+import numpy as np
 
 # Initialize Qt resources from file resources.py
 from .resources import *
@@ -34,6 +34,11 @@ from .resources import *
 from .assimila_datacube_dialog import AssimilaDatacCubeDialog
 import os.path
 
+# Set up connection to database
+from .DQclient import AssimilaData
+from .dq_db_connect import DqDbConnection
+from .db_view import DQDataBaseView
+dqbv = DQDataBaseView()
 
 class AssimilaDatacCube:
     """QGIS Plugin Implementation."""
@@ -73,8 +78,10 @@ class AssimilaDatacCube:
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
         self.first_start = None
-        self.dlg = AssimilaDatacCubeDialog()
+        self.dlg = AssimilaDatacCubeDialog(iface)
 
+        self.http_client = AssimilaData(self.dlg.lineEdit.displayText())
+        #self.http_client = AssimilaData("/Users/Jenny/Documents/.assimila_dq")
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -90,7 +97,6 @@ class AssimilaDatacCube:
         """
         # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
         return QCoreApplication.translate('AssimilaDatacCube', message)
-
 
     def add_action(
         self,
@@ -179,7 +185,6 @@ class AssimilaDatacCube:
         # will be set False in run()
         self.first_start = True
 
-
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
         for action in self.actions:
@@ -187,7 +192,6 @@ class AssimilaDatacCube:
                 self.tr(u'&Assimila Data Cube'),
                 action)
             self.iface.removeToolBarIcon(action)
-
 
     def check(self, north, east, south, west, start, end):
         if str(end) < str(start):
@@ -206,8 +210,8 @@ class AssimilaDatacCube:
         else:
             subproducts = ['skt', 't2m', 'skt_ensemble_mean', 'land_sea_mask', 't2m_ensemble_spread', 't2m_ensemble_mean', 'skt_ensemble_spread']
         self.dlg.subproducts_comboBox.addItems(subproducts) 
-    
-    def btnstate(self,b, dt1, dt2):
+         
+    def radio_btn_state(self, b, dt1, dt2):
 
         if b.isChecked() == True:
             dt1.setDisabled(False)
@@ -217,50 +221,101 @@ class AssimilaDatacCube:
             dt1.setDisabled(False)
             dt2.setDisabled(False)
             #print (b.text()+" is deselected")
+    
+    def get_data_from_datacube_nesw(self, product, subproduct, north, east, south, west, start, end):
+        self.dlg.subproducts_comboBox.clear()
+        res = self.http_client.get(
+            {'command':'GET_DATA',
+                'product_metadata' : {'product':product.lower(),
+                                    'subproduct': [subproduct],
+                                    'north': north,
+                                    'east': east,
+                                    'south': south,
+                                    'west': west,
+                                    'start_date': np.datetime64(start),
+                                    'end_date': np.datetime64(end),
+                                    }})
+        self.dlg.products_comboBox.clear()
 
+        return res[0]
+    
     def run(self):
+
+
         """Run method that performs all the real work"""
-        #self.dlg.products_comboBox.clear()
+        self.dlg.products_comboBox.clear()
+        self.dlg.lineEdit.clear()
+        from os.path import expanduser
+        self.key_file = os.path.join(expanduser("~"), "Documents", ".assimila_dq") 
+        self.dlg.lineEdit.insert(self.key_file)
 
         # Display dropdowns
         products = ['TAMSAT', 'CHIRPS', 'era5']
         self.dlg.products_comboBox.addItems(products)
+        self.dlg.subproducts_comboBox.addItem('rfe')
         self.dlg.products_comboBox.currentTextChanged.connect(self.subproduct_selectionchange)
+        self.dlg.subproducts_comboBox.removeItem(1)
 
-        #radio buttons and date
-        self.dlg.multi_radioButton.toggled.connect(lambda: self.btnstate(self.dlg.single_radioButton, self.dlg.dateTimeEdit_1, self.dlg.dateTimeEdit_2))
-
+        # radio buttons and date
+        self.dlg.multi_radioButton.toggled.connect(lambda: self.radio_btn_state(self.dlg.single_radioButton, self.dlg.dateTimeEdit_1, self.dlg.dateTimeEdit_2))
+         # show the dialog
+        self.dlg.show()
+        # Run the dialog event loop
+        result = self.dlg.exec_()
 
         # Create the dialog with elements (after translation) and keep reference
         # Only create GUI ONCE in callback, so that it will only load when the plugin is started
         if self.first_start == True:
             self.first_start = False
-            self.dlg = AssimilaDatacCubeDialog()
+            self.dlg = AssimilaDatacCubeDialog(self.iface)
 
-        # show the dialog
-        self.dlg.show()
-        # Run the dialog event loop
-        result = self.dlg.exec_()
         # See if OK was pressed
         if result:
             # Do something useful here - delete the line containing pass and
             # substitute with your code.
-            north = self.dlg.N_spinBox.value()
-            east = self.dlg.E_spinBox.value()
-            south = self.dlg.S_spinBox.value()
-            west = self.dlg.W_spinBox.value()
-            start = self.dlg.dateTimeEdit_1.date()
-            end = self.dlg.dateTimeEdit_2.date()
-            self.check(north, east, south, west, start, end)
-            print(north)
 
-           # print (str(north) + str(east))
-#            msg = QMessageBox()
-#            msg.setIcon(QMessageBox.Information)
-#            msg.setText("This is a message box")
-#            msg.setInformativeText("This is additional information")
-#            msg.setWindowTitle("MessageBox demo")
-#            msg.setDetailedText("The details are as follows:")
+            # runs process using values in widgets
+            product = (self.dlg.products_comboBox.currentText()).lower()
+            print(product)
+            subproduct = self.dlg.subproducts_comboBox.currentText()
+            print(subproduct)
+            north = self.dlg.N_spinBox.value()
+            print(north)
+            east = self.dlg.E_spinBox.value()
+            print(east)
+            south = self.dlg.S_spinBox.value()
+            print(south)
+            west = self.dlg.W_spinBox.value()
+            print(west)
+
+            # formatting start and end dates and hour
+            start = self.dlg.dateTimeEdit_1.dateTime().toString("yyyy-MM-ddTHH:00:00")
+            print(start)
+            if self.dlg.single_radioButton.isChecked():
+                end = start
+            else: 
+                end = self.dlg.dateTimeEdit_2.dateTime().toString("yyyy-MM-ddTHH:00:00")
+            print(end)
+            
+            # get xarray from datacube
+            y = self.get_data_from_datacube_nesw(product, subproduct, north, east, south, west, start, end)
+         
+            import tempfile
+            
+            # formatting the start and end variables
+            start_datetime = self.dlg.dateTimeEdit_1.dateTime().toString("yyyyMMdd_HH")
+            end_datetime = self.dlg.dateTimeEdit_2.dateTime().toString("yyyyMMdd_HH")
+
+            # create filename and find its path
+            filename = "%s_%s_N%d_E%d_S%d_W%d_%s_%s" % (product, subproduct, north, east, south, west, start_datetime, end_datetime)
+            default_temp_path = f"{tempfile.gettempdir()}/{filename}.nc"
+            print(default_temp_path)
+            
+            # write to netcdf
+            y.to_netcdf(default_temp_path)
+
+            #creates new layer and adds to current project
+            self.iface.addRasterLayer(default_temp_path, "raster_file")
 
             pass
 

@@ -1,0 +1,9 @@
+    {
+      "idproduct": "INT",
+      "name": "TEXT",
+      "longname": "TEXT",
+      "description": "TEXT",
+      "keywords": "TEXT",
+      "link": "TEXT",
+      "srid": "TEXT"
+    }
