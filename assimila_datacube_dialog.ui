@@ -336,6 +336,9 @@
      <height>41</height>
     </rect>
    </property>
+   <property name="minimum">
+    <double>-90.000000000000000</double>
+   </property>
    <property name="maximum">
     <double>90.000000000000000</double>
    </property>

@@ -219,8 +219,9 @@ class AssimilaDatacCube:
             raise ValueError('North value should be greater than south')
         
         # check area of box is less than 25*25=625
-        print (north - south)
-        print (east - west)
+        print ('N-S=' + str(north - south))
+        print ('E-W=' + str(east - west))
+        print ('Total area = ' + str((north - south) * (east - west)))
         if (north - south) * (east - west) > 625:
             raise ValueError('Exceeded maximum area of canvas')
 
@@ -313,13 +314,13 @@ class AssimilaDatacCube:
             subproduct = self.dlg.subproducts_comboBox.currentText()
             print(subproduct)
             north = self.dlg.N_spinBox.value()
-            print('N' + north)
+            print('N: ' + str(north))
             east = self.dlg.E_spinBox.value()
-            print('E' + east)
+            print('E: ' + str(east))
             south = self.dlg.S_spinBox.value()
-            print('S' + south)
+            print('S: ' + str(south))
             west = self.dlg.W_spinBox.value()
-            print('W' + west)
+            print('W: ' + str(west))
 
             # Format start and end dates and hour for datecube
             start = self.dlg.dateTimeEdit_1.dateTime().toString("yyyy-MM-ddTHH:00:00")
