@@ -204,9 +204,9 @@ class AssimilaDatacCube:
             raise ValueError('End date should not be before start date')
         
         # check that end date does not exceed 30 days from start date
-        # limit is 30 days 23 hours
-        # 01/01/2000 - 31/01/2000 -> SUCCESS 
-        # 01/01/2000 - 01/02/2000 -> FAIL 
+            # limit is 30 days 23 hours
+            # 01/01/2000 - 31/01/2000 -> SUCCESS 
+            # 01/01/2000 - 01/02/2000 -> FAIL 
         if start.daysTo(end) > 30:
             raise ValueError('Maximum number of delays selected is limited to 30 days')
 
@@ -348,7 +348,7 @@ class AssimilaDatacCube:
             print(default_temp_path)
 
             # Creates new layer and adds to current project
-            self.iface.addRasterLayer(default_temp_path, "raster_file")
+            self.iface.addRasterLayer(default_temp_path, "%s_%s_N%d_E%d_S%d_W%d_%s_%s" % (product, subproduct, north, east, south, west, start_datetime, end_datetime))
 
             pass
 
