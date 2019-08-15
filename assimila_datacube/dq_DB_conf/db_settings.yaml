@@ -1,5 +1,0 @@
-dbname: PRISE
-user: postgres
-host: 192.168.11.28
-port: 5432
-password: postgres
