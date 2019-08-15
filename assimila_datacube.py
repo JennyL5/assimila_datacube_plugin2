@@ -221,7 +221,7 @@ class AssimilaDatacCube:
         # check area of box is less than 25*25=625
         print ('N-S=' + str(north - south))
         print ('E-W=' + str(east - west))
-        print ('Total area = ' + str((north - south) * (east - west)))
+        print ('Total area = ' + str((north - south) * (east - west))) 
         if (north - south) * (east - west) > 625:
             raise ValueError('Exceeded maximum area of canvas')
 
