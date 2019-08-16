@@ -36,7 +36,7 @@ from qgis.PyQt.QtNetwork import QNetworkRequest, QNetworkReply,  QNetworkAccessM
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), 'assimila_datacube_dialog.ui'))
+    os.path.dirname(__file__), 'assimila_datacube_dialog_base.ui'))
 
 
 class AssimilaDatacCubeDialog(QtWidgets.QDialog, FORM_CLASS):
