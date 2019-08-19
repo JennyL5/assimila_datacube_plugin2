@@ -275,6 +275,12 @@ class AssimilaDatacCube:
     
     def run(self):
 
+        # Create the dialog with elements (after translation) and keep reference
+        # Only create GUI ONCE in callback, so that it will only load when the plugin is started
+        if self.first_start == True:
+            self.first_start = False
+            self.dlg = AssimilaDatacCubeDialog(self.iface)
+
         # Clears the values from previous run
         self.dlg.products_comboBox.clear()
         self.dlg.lineEdit.clear()
@@ -297,12 +303,6 @@ class AssimilaDatacCube:
         self.dlg.show()
         # Run the dialog event loop
         result = self.dlg.exec_()
-
-        # Create the dialog with elements (after translation) and keep reference
-        # Only create GUI ONCE in callback, so that it will only load when the plugin is started
-        if self.first_start == True:
-            self.first_start = False
-            self.dlg = AssimilaDatacCubeDialog(self.iface)
 
         # Runs when OK button is pressed
         if result:
@@ -338,8 +338,8 @@ class AssimilaDatacCube:
                 # Perform checks method
                 self.check(north, east, south, west, self.dlg.dateTimeEdit_1.dateTime(), self.dlg.dateTimeEdit_2.dateTime())
             
-            #print(start)
-            #print(end)
+            print(start)
+            print(end)
 
             # Get Xarray from datacube
             y = self.get_data_from_datacube_nesw(product, subproduct, north, east, south, west, start, end)
