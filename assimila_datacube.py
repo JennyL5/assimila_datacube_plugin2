@@ -34,7 +34,6 @@ from .resources import *
 from .assimila_datacube_dialog import AssimilaDatacCubeDialog
 import os.path
 from os.path import expanduser
-
 import tempfile
 
 # Set up connection to database
@@ -200,7 +199,7 @@ class AssimilaDatacCube:
 
     def check(self, north, east, south, west, start, end):
         # check start is after end date
-        if str(end) < str(start):
+        if str(end)<str(start):
             raise ValueError('End date should not be before start date')
         
         # check that end date does not exceed 30 days from start date
@@ -326,11 +325,21 @@ class AssimilaDatacCube:
             start = self.dlg.dateTimeEdit_1.dateTime().toString("yyyy-MM-ddTHH:00:00")
             if self.dlg.single_radioButton.isChecked():
                 end = start
+                #print('single is checked')
+                #print(start)
+                #print(end)
+                # Perform checks method
+                self.check(north, east, south, west, self.dlg.dateTimeEdit_1.dateTime(), self.dlg.dateTimeEdit_1.dateTime())
             else: 
                 end = self.dlg.dateTimeEdit_2.dateTime().toString("yyyy-MM-ddTHH:00:00")
+                #print('multi is checked')
+                #print(start)
+                #print(end)
+                # Perform checks method
+                self.check(north, east, south, west, self.dlg.dateTimeEdit_1.dateTime(), self.dlg.dateTimeEdit_2.dateTime())
             
-            # Perform checks method
-            self.check(north, east, south, west, self.dlg.dateTimeEdit_1.dateTime(), self.dlg.dateTimeEdit_2.dateTime())
+            #print(start)
+            #print(end)
 
             # Get Xarray from datacube
             y = self.get_data_from_datacube_nesw(product, subproduct, north, east, south, west, start, end)

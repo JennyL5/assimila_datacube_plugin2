@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>Dialog</class>
  <widget class="QDialog" name="Dialog">
+  <property name="windowModality">
+   <enum>Qt::ApplicationModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -33,7 +36,7 @@
    <property name="geometry">
     <rect>
      <x>60</x>
-     <y>160</y>
+     <y>170</y>
      <width>55</width>
      <height>16</height>
     </rect>
@@ -46,7 +49,7 @@
    <property name="geometry">
     <rect>
      <x>310</x>
-     <y>160</y>
+     <y>170</y>
      <width>91</width>
      <height>16</height>
     </rect>
@@ -95,7 +98,7 @@
    <property name="geometry">
     <rect>
      <x>60</x>
-     <y>180</y>
+     <y>190</y>
      <width>181</width>
      <height>21</height>
     </rect>
@@ -117,7 +120,7 @@
    <property name="geometry">
     <rect>
      <x>310</x>
-     <y>180</y>
+     <y>190</y>
      <width>181</width>
      <height>21</height>
     </rect>
@@ -202,7 +205,7 @@
      <hour>6</hour>
      <minute>0</minute>
      <second>0</second>
-     <year>2000</year>
+     <year>2018</year>
      <month>1</month>
      <day>1</day>
     </datetime>
@@ -376,7 +379,7 @@
      <hour>18</hour>
      <minute>0</minute>
      <second>0</second>
-     <year>2000</year>
+     <year>2018</year>
      <month>1</month>
      <day>2</day>
     </datetime>
@@ -414,17 +417,17 @@
   <widget class="QLabel" name="label_9">
    <property name="geometry">
     <rect>
-     <x>70</x>
+     <x>80</x>
      <y>30</y>
-     <width>391</width>
-     <height>91</height>
+     <width>401</width>
+     <height>101</height>
     </rect>
    </property>
    <property name="text">
     <string/>
    </property>
    <property name="pixmap">
-    <pixmap>../../../../../../../../../Pictures/Assimila_namelogo.png</pixmap>
+    <pixmap resource="resources.qrc">:/plugins/assimila_datacube/assimila_namelogo.png</pixmap>
    </property>
    <property name="scaledContents">
     <bool>true</bool>
@@ -433,18 +436,24 @@
   <widget class="QLabel" name="Description">
    <property name="geometry">
     <rect>
-     <x>180</x>
-     <y>100</y>
-     <width>221</width>
-     <height>31</height>
+     <x>170</x>
+     <y>110</y>
+     <width>291</width>
+     <height>41</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>9</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
    </property>
    <property name="text">
     <string>A QGIS plugin to visualise a datacube</string>
    </property>
   </widget>
  </widget>
- <resources/>
  <connections>
   <connection>
    <sender>buttonBox</sender>
