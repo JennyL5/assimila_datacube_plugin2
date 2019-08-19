@@ -284,10 +284,15 @@ class AssimilaDatacCube:
         # Clears the values from previous run
         self.dlg.products_comboBox.clear()
         self.dlg.lineEdit.clear()
+        self.dlg.lineEdit_2.clear()
 
         # Displays default key file path location
         self.key_file = os.path.join(expanduser("~"), "Documents", ".assimila_dq") 
         self.dlg.lineEdit.insert(self.key_file)
+
+        # Display default raster file path location
+        raster_file = "Users\Jenny\AppData\Local\Temp"
+        self.dlg.lineEdit_2.insert(raster_file)
 
         # Display dropdowns
         products = ['TAMSAT', 'CHIRPS', 'era5']
@@ -350,14 +355,17 @@ class AssimilaDatacCube:
 
             # Create filename and find its path
             filename = "%s_%s_N%d_E%d_S%d_W%d_%s_%s" % (product, subproduct, north, east, south, west, start_datetime, end_datetime)
-            default_temp_path = f"{tempfile.gettempdir()}/{filename}.nc"
-            
+            #default_temp_path = f"{tempfile.gettempdir()}/{filename}.nc"
+            a = (self.dlg.lineEdit_2.displayText())
+            b = (f"{filename}.nc")
+            raster_path = os.path.join(a, b)
+
             # Write Xarray to netcdf
-            y.to_netcdf(default_temp_path)
-            print(default_temp_path)
+            y.to_netcdf(raster_path)
+            print(raster_path)
 
             # Creates new layer and adds to current project
-            self.iface.addRasterLayer(default_temp_path, "%s_%s_N%d_E%d_S%d_W%d_%s_%s" % (product, subproduct, north, east, south, west, start_datetime, end_datetime))
+            self.iface.addRasterLayer(raster_path, "%s_%s_N%d_E%d_S%d_W%d_%s_%s" % (product, subproduct, north, east, south, west, start_datetime, end_datetime))
 
             pass
 

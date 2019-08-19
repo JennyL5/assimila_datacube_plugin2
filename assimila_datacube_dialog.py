@@ -82,3 +82,14 @@ class AssimilaDatacCubeDialog(QtWidgets.QDialog, FORM_CLASS):
 
         # Displays in lineEdit                             
         self.lineEdit.setText(self.key_file)   
+
+    @pyqtSlot()
+    def on_btn_browse_rasterfile_clicked(self):
+        # Gets default directory for the temporary raster file location
+        self.dir = QFileDialog.getExistingDirectory(None, self.tr("Open Directory"),
+                                                    "Users\Jenny\AppData\Local\Temp",
+                                                    QFileDialog.ShowDirsOnly 
+                                                    | QFileDialog.DontResolveSymlinks)
+
+        # Displays in lineEdit   "Users\Jenny\AppData\Local\Temp"                        
+        self.lineEdit_2.setText(self.dir)  
