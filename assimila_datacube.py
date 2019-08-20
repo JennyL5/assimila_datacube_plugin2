@@ -291,7 +291,14 @@ class AssimilaDatacCube:
         self.dlg.lineEdit.insert(self.key_file)
 
         # Display default raster file path location
-        raster_file = "Users\Jenny\AppData\Local\Temp"
+        """ 
+            Not using temporary location due to permissioin error if you
+            read the path from the lineEdit. Use tempfile.gettempdir to 
+            access temporary directory without permission error. 
+            raster_file = "Users\Jenny\AppData\Local\Temp"
+            #default_temp_path = f"{tempfile.gettempdir()}/{filename}.nc"
+        """
+        raster_file = os.path.join(expanduser("~"), "Documents")
         self.dlg.lineEdit_2.insert(raster_file)
 
         # Display dropdowns
@@ -358,14 +365,13 @@ class AssimilaDatacCube:
             #default_temp_path = f"{tempfile.gettempdir()}/{filename}.nc"
             a = (self.dlg.lineEdit_2.displayText())
             b = (f"{filename}.nc")
-            raster_path = os.path.join(a, b)
+            default_temp_path = os.path.join(a, b)
 
             # Write Xarray to netcdf
-            y.to_netcdf(raster_path)
-            print(raster_path)
-
+            y.to_netcdf(default_temp_path)
+        
             # Creates new layer and adds to current project
-            self.iface.addRasterLayer(raster_path, "%s_%s_N%d_E%d_S%d_W%d_%s_%s" % (product, subproduct, north, east, south, west, start_datetime, end_datetime))
+            self.iface.addRasterLayer(default_temp_path, "%s_%s_N%d_E%d_S%d_W%d_%s_%s" % (product, subproduct, north, east, south, west, start_datetime, end_datetime))
 
             pass
 
