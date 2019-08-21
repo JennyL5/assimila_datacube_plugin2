@@ -37,10 +37,16 @@ from os.path import expanduser
 import tempfile
 
 # Set up connection to database
+"""
 from .DQclient import AssimilaData
 from .dq_db_connect import DqDbConnection
 from .db_view import DQDataBaseView
 dqbv = DQDataBaseView()
+"""
+
+# Import DQTools
+from .DQTools.DQTools import Search, Dataset
+
 
 class AssimilaDatacCube:
     """QGIS Plugin Implementation."""
@@ -85,7 +91,9 @@ class AssimilaDatacCube:
         self.dlg = AssimilaDatacCubeDialog(iface)
 
         # Calls the keyfile at location specified in the lineEdit widget
-        self.http_client = AssimilaData(self.dlg.lineEdit.displayText())
+        #keyfile = "Users\Jenny\AppData\Roaming\QGIS\QGIS3\profiles\default\python\plugins\assimila_datacube\DQTools\DQTools\connect\.assimila_dq"
+        #self.http_client = AssimilaData(keyfile)
+        #self.http_client = AssimilaData(self.dlg.lineEdit.displayText())
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -225,7 +233,15 @@ class AssimilaDatacCube:
             raise ValueError('Exceeded maximum area of canvas')
 
     def subproduct_selectionchange(self):
-        
+        self.dlg.subproducts_comboBox.clear()
+        product = self.dlg.products_comboBox.currentText()
+        print(product)
+        subproducts = Search.get_subproduct_list_of_product(self, product)
+        print(subproducts)
+        self.dlg.subproducts_comboBox.addItems(subproducts) 
+
+
+        """
         # Clears previous options in the subproducts dropdown menu
         self.dlg.subproducts_comboBox.clear()
         
@@ -237,7 +253,8 @@ class AssimilaDatacCube:
         
         # Displays the subproducts in the dropdown menu
         self.dlg.subproducts_comboBox.addItems(subproducts) 
-         
+         """
+
     def radio_btn_state(self, b, dt1, dt2):
         
         # If single radio button (b) is checked, then enable 1 datetime widget box
@@ -257,21 +274,14 @@ class AssimilaDatacCube:
         self.dlg.products_comboBox.clear()
         self.dlg.subproducts_comboBox.clear()
 
-        # Requests data from the datacube
-        res = self.http_client.get(
-            {'command':'GET_DATA',
-                'product_metadata' : {'product':product.lower(), # case sensitive
-                                    'subproduct': [subproduct],
-                                    'north': north,
-                                    'east': east,
-                                    'south': south,
-                                    'west': west,
-                                    'start_date': np.datetime64(start),
-                                    'end_date': np.datetime64(end),
-                                    }})
+        # Using DQTools
+        query = Dataset(product=product, subproduct=subproduct, region=None, tile=None, res=None) 
+        region = [north, east, south, west]
+        query.get_data(start = start, stop=end, region=region, tile=None, res=None)
+
 
         # Return an Xarray (later reffered to as y)
-        return res[0]
+        return query.data
     
     def run(self):
 
@@ -287,7 +297,9 @@ class AssimilaDatacCube:
         self.dlg.lineEdit_2.clear()
 
         # Displays default key file path location
-        self.key_file = os.path.join(expanduser("~"), "Documents", ".assimila_dq") 
+        self.key_file = os.path.join(os.path.dirname(__file__), ".assimila_dq")
+
+        #self.key_file = os.path.join(expanduser("~"), "Documents", "public-only-keyfile.txt")
         self.dlg.lineEdit.insert(self.key_file)
 
         # Display default raster file path location
@@ -301,9 +313,14 @@ class AssimilaDatacCube:
         raster_file = os.path.join(expanduser("~"), "Documents")
         self.dlg.lineEdit_2.insert(raster_file)
 
-        # Display dropdowns
-        products = ['TAMSAT', 'CHIRPS', 'era5']
+        # Display dropdowns for products
+        products = Search.products().name.tolist()
         self.dlg.products_comboBox.addItems(products)
+        self.dlg.products_comboBox.addItem(" ")
+        
+        # Display dropdown for subproducts
+        product = self.dlg.products_comboBox.currentText()
+        #self.dlg.products_comboBox.currentTextChanged.connect(lambda: self.subproduct_selectionchange()) # For updating the subproduct
         self.dlg.subproducts_comboBox.addItem('rfe') # Defaulting 1st item in Product is 'TAMSAT' so 1st item in Subprodusct is 'rfe'
         self.dlg.products_comboBox.currentTextChanged.connect(self.subproduct_selectionchange) # For updating the subproduct
         self.dlg.subproducts_comboBox.removeItem(1) # Removing default subproduct value of 'rfe'

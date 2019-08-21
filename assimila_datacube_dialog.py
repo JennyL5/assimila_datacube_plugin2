@@ -92,4 +92,5 @@ class AssimilaDatacCubeDialog(QtWidgets.QDialog, FORM_CLASS):
                                                     | QFileDialog.DontResolveSymlinks)
 
         # Displays in lineEdit   "Users\Jenny\AppData\Local\Temp"                        
-        self.lineEdit_2.setText(self.dir)  
+        self.lineEdit_2.setText(self.dir)
+        
