@@ -90,10 +90,6 @@ class AssimilaDatacCube:
         self.first_start = None
         self.dlg = AssimilaDatacCubeDialog(iface)
 
-        # Calls the keyfile at location specified in the lineEdit widget
-        #keyfile = "Users\Jenny\AppData\Roaming\QGIS\QGIS3\profiles\default\python\plugins\assimila_datacube\DQTools\DQTools\connect\.assimila_dq"
-        #self.http_client = AssimilaData(keyfile)
-        #self.http_client = AssimilaData(self.dlg.lineEdit.displayText())
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -241,20 +237,6 @@ class AssimilaDatacCube:
         self.dlg.subproducts_comboBox.addItems(subproducts) 
 
 
-        """
-        # Clears previous options in the subproducts dropdown menu
-        self.dlg.subproducts_comboBox.clear()
-        
-        # Matching subporducts to their products
-        if str(self.dlg.products_comboBox.currentText()) == 'TAMSAT' or str(self.dlg. products_comboBox.currentText()) == 'CHIRPS':
-            subproducts = ['rfe']
-        else:
-            subproducts = ['skt', 't2m', 'skt_ensemble_mean', 'land_sea_mask', 't2m_ensemble_spread', 't2m_ensemble_mean', 'skt_ensemble_spread']
-        
-        # Displays the subproducts in the dropdown menu
-        self.dlg.subproducts_comboBox.addItems(subproducts) 
-         """
-
     def radio_btn_state(self, b, dt1, dt2):
         
         # If single radio button (b) is checked, then enable 1 datetime widget box
@@ -269,11 +251,15 @@ class AssimilaDatacCube:
             #print (b.text()+" is deselected")
     
     def get_data_from_datacube_nesw(self, product, subproduct, north, east, south, west, start, end):
+
+        # Get key_file location with access to the datacube to get_data from Dataset.py
+        key_file = self.dlg.lineEdit.displayText()
+        print(f"key_file location: {key_file}")
     
         # Using DQTools
-        query = Dataset(product=product, subproduct=subproduct, region=None, tile=None, res=None) 
+        query = Dataset(product=product, subproduct=subproduct, region=None, tile=None, res=None, key_file=key_file) #connect to DQ1
         region = [north, east, south, west]
-        query.get_data(start = start, stop=end, region=region, tile=None, res=None)
+        query.get_data(start = start, stop=end, region=region, tile=None, res=None,) #connect to DQ2
 
         # Return an Xarray
         return query.data
@@ -362,7 +348,6 @@ class AssimilaDatacCube:
             
             print(start)
             print(end)
-
 
             # Get Xarray from datacube
             y = self.get_data_from_datacube_nesw(product, subproduct, north, east, south, west, start, end)
