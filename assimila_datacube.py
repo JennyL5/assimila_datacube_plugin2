@@ -269,22 +269,16 @@ class AssimilaDatacCube:
             #print (b.text()+" is deselected")
     
     def get_data_from_datacube_nesw(self, product, subproduct, north, east, south, west, start, end):
-        
-        # Clear the products and subproducts drop down menu
-        self.dlg.products_comboBox.clear()
-        self.dlg.subproducts_comboBox.clear()
-
+    
         # Using DQTools
         query = Dataset(product=product, subproduct=subproduct, region=None, tile=None, res=None) 
         region = [north, east, south, west]
         query.get_data(start = start, stop=end, region=region, tile=None, res=None)
 
-
-        # Return an Xarray (later reffered to as y)
+        # Return an Xarray
         return query.data
     
     def run(self):
-
         # Create the dialog with elements (after translation) and keep reference
         # Only create GUI ONCE in callback, so that it will only load when the plugin is started
         if self.first_start == True:
@@ -292,13 +286,12 @@ class AssimilaDatacCube:
             self.dlg = AssimilaDatacCubeDialog(self.iface)
 
         # Clears the values from previous run
-        self.dlg.products_comboBox.clear()
-        self.dlg.lineEdit.clear()
-        self.dlg.lineEdit_2.clear()
+        # Do not need to clear subproducts because it automatically updates
+        self.dlg.lineEdit.clear() #keyfile
+        self.dlg.lineEdit_2.clear() #rasterfile
 
-        # Displays default key file path location
+        # Displays key file path location
         self.key_file = os.path.join(os.path.dirname(__file__), ".assimila_dq")
-
         #self.key_file = os.path.join(expanduser("~"), "Documents", "public-only-keyfile.txt")
         self.dlg.lineEdit.insert(self.key_file)
 
@@ -314,15 +307,21 @@ class AssimilaDatacCube:
         self.dlg.lineEdit_2.insert(raster_file)
 
         # Display dropdowns for products
-        products = Search.products().name.tolist()
-        self.dlg.products_comboBox.addItems(products)
-        self.dlg.products_comboBox.addItem(" ")
+        # Only runs on the first run as the products_comboBox is empty
+        # Instead of clearing the products combobox and then appending everytime
+        # Only searches for products once despite the number of times the plugin is run
+        if self.dlg.products_comboBox.currentIndex() == -1:
+            products = Search.products().name.tolist()
+            self.dlg.products_comboBox.setDuplicatesEnabled(False) 
+            self.dlg.products_comboBox.addItems(products)
         
         # Display dropdown for subproducts
         product = self.dlg.products_comboBox.currentText()
         #self.dlg.products_comboBox.currentTextChanged.connect(lambda: self.subproduct_selectionchange()) # For updating the subproduct
         self.dlg.subproducts_comboBox.addItem('rfe') # Defaulting 1st item in Product is 'TAMSAT' so 1st item in Subprodusct is 'rfe'
-        self.dlg.products_comboBox.currentTextChanged.connect(self.subproduct_selectionchange) # For updating the subproduct
+        """ Issue: for nth run, perform nth subproduct_selectionchange """
+        #self.dlg.products_comboBox.currentTextChanged.connect(self.subproduct_selectionchange) # For updating the subproduct
+        self.dlg.products_comboBox.currentTextChanged.connect(lambda: self.subproduct_selectionchange()) # For updating the subproduct
         self.dlg.subproducts_comboBox.removeItem(1) # Removing default subproduct value of 'rfe'
 
         # Links the Radio buttons and datetime widgets
@@ -338,9 +337,9 @@ class AssimilaDatacCube:
 
             # runs process using values in widgets
             product = (self.dlg.products_comboBox.currentText()).lower()
-            print(product)
+            print(f"The product being run is {product}")
             subproduct = self.dlg.subproducts_comboBox.currentText()
-            print(subproduct)
+            print(f"The subproduct being run is {subproduct}")
             north = self.dlg.N_spinBox.value()
             print('N: ' + str(north))
             east = self.dlg.E_spinBox.value()
@@ -354,21 +353,16 @@ class AssimilaDatacCube:
             start = self.dlg.dateTimeEdit_1.dateTime().toString("yyyy-MM-ddTHH:00:00")
             if self.dlg.single_radioButton.isChecked():
                 end = start
-                #print('single is checked')
-                #print(start)
-                #print(end)
-                # Perform checks method
+                # Perform check method for d1
                 self.check(north, east, south, west, self.dlg.dateTimeEdit_1.dateTime(), self.dlg.dateTimeEdit_1.dateTime())
             else: 
                 end = self.dlg.dateTimeEdit_2.dateTime().toString("yyyy-MM-ddTHH:00:00")
-                #print('multi is checked')
-                #print(start)
-                #print(end)
-                # Perform checks method
+                # Perform check method for d1 d2
                 self.check(north, east, south, west, self.dlg.dateTimeEdit_1.dateTime(), self.dlg.dateTimeEdit_2.dateTime())
             
             print(start)
             print(end)
+
 
             # Get Xarray from datacube
             y = self.get_data_from_datacube_nesw(product, subproduct, north, east, south, west, start, end)

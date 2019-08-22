@@ -1,0 +1,3 @@
+[submodule "DQTools"]
+	path = DQTools
+	url = https://github.com/Assimila/DQTools.git

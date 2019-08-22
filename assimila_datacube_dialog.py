@@ -73,7 +73,8 @@ class AssimilaDatacCubeDialog(QtWidgets.QDialog, FORM_CLASS):
     def on_btn_browse_keyfile_clicked(self):
         # Gets directory for the keyfile - default: /users/{user_name}/Documents
         self.dir = QFileDialog.getExistingDirectory(None, self.tr("Open Directory"),
-                                                    os.path.join(expanduser("~"), "Documents"),
+                                                    os.path.dirname(__file__),
+                                                    #os.path.join(expanduser("~"), "Documents"),
                                                     QFileDialog.ShowDirsOnly 
                                                     | QFileDialog.DontResolveSymlinks)
 
@@ -87,7 +88,8 @@ class AssimilaDatacCubeDialog(QtWidgets.QDialog, FORM_CLASS):
     def on_btn_browse_rasterfile_clicked(self):
         # Gets default directory for the temporary raster file location
         self.dir = QFileDialog.getExistingDirectory(None, self.tr("Open Directory"),
-                                                    "Users\Jenny\AppData\Local\Temp",
+                                                    #"Users\Jenny\AppData\Local\Temp",
+                                                    os.path.join(expanduser("~"), "Documents"),
                                                     QFileDialog.ShowDirsOnly 
                                                     | QFileDialog.DontResolveSymlinks)
 
