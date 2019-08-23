@@ -36,16 +36,8 @@ import os.path
 from os.path import expanduser
 import tempfile
 
-# Set up connection to database
-"""
-from .DQclient import AssimilaData
-from .dq_db_connect import DqDbConnection
-from .db_view import DQDataBaseView
-dqbv = DQDataBaseView()
-"""
-
-# Import DQTools
-from .DQTools.DQTools import Search, Dataset
+# Import DQTools to set up connection to database
+from .DQTools.DQTools import Search, Dataset 
 
 
 class AssimilaDatacCube:
@@ -202,6 +194,18 @@ class AssimilaDatacCube:
             self.iface.removeToolBarIcon(action)
 
     def check(self, north, east, south, west, start, end):
+        """
+        Performs checks: start date is before end date, restricting frequency,
+        east value is larger than west, and north value is larger than south.
+        :param north: The name of the north point
+        :param east: The name of the east point
+        :param south: The name of the south point
+        :param west: The name of the west point
+        :param start: The start date
+        :param end: The end date
+        :return:
+        """
+
         # check start is after end date
         if str(end)<str(start):
             raise ValueError('End date should not be before start date')
@@ -229,6 +233,11 @@ class AssimilaDatacCube:
             raise ValueError('Exceeded maximum area of canvas')
 
     def subproduct_selectionchange(self):
+        """
+        Updates the subproduct combo box to give a list of subproducts
+        of the selected product.
+        :return:
+        """
         self.dlg.subproducts_comboBox.clear()
         product = self.dlg.products_comboBox.currentText()
         print(product)
@@ -238,7 +247,14 @@ class AssimilaDatacCube:
 
 
     def radio_btn_state(self, b, dt1, dt2):
-        
+        """
+        Enables and disables the date and hour picker widgets when
+        the radio buttons are selected.
+        :param b: The radio button for single time step - self.dlg.single_radioButton
+        :param dt1: The data and time picker for the start - self.dlg.dateTimeEdit_1
+        :param dt2: The date and time picker for the end - self.dlg.dateTimeEdit_2
+        :return:
+        """
         # If single radio button (b) is checked, then enable 1 datetime widget box
         if b.isChecked() == True:
             dt1.setDisabled(False)
@@ -251,20 +267,72 @@ class AssimilaDatacCube:
             #print (b.text()+" is deselected")
     
     def get_data_from_datacube_nesw(self, product, subproduct, north, east, south, west, start, end):
+        """
+        The request sent to the datacube to process the data given the key file.
+        :param product: The name of the product
+        :param subproduct: The name of the subproduct
+        :param north: The name of the north point
+        :param east: The name of the east point
+        :param south: The name of the south point
+        :param west: The name of the west point
+        :param start: The start date
+        :param end: The end date
+        :return:
+        """
 
         # Get key_file location with access to the datacube to get_data from Dataset.py
         key_file = self.dlg.lineEdit.displayText()
         print(f"key_file location: {key_file}")
     
         # Using DQTools
-        query = Dataset(product=product, subproduct=subproduct, region=None, tile=None, res=None, key_file=key_file) #connect to DQ1
+        query = Dataset(product=product, subproduct=subproduct, region=None, tile=None, res=None, key_file=key_file)
         region = [north, east, south, west]
-        query.get_data(start = start, stop=end, region=region, tile=None, res=None,) #connect to DQ2
+        query.get_data(start = start, stop=end, region=region, tile=None, res=None,)
 
         # Return an Xarray
         return query.data
     
+    def create_raster_file(self, product, subproduct, north, east, south, west, y):
+        """
+        This prepares and creates the path where the Xarray writes to netcdf file, 
+        which can be added as a Raster layer.
+        :param product: The name of the product
+        :param subproduct: The name of the subproduct
+        :param north: The name of the north point
+        :param east: The name of the east point
+        :param south: The name of the south point
+        :param west: The name of the west point
+        :param start: The start date
+        :param end: The end date
+        :param y: The Xarray outputted from the datacube request
+        :return:
+        """
+
+        # Re-formats the start and end dates and hour for filename
+        start_datetime = self.dlg.dateTimeEdit_1.dateTime().toString("yyyyMMdd_HH")
+        end_datetime = self.dlg.dateTimeEdit_2.dateTime().toString("yyyyMMdd_HH")
+
+        # Create filename and find its path
+        filename = "%s_%s_N%d_E%d_S%d_W%d_%s_%s" % (product, subproduct, north, east, south, west, start_datetime, end_datetime)
+        #default_temp_path = f"{tempfile.gettempdir()}/{filename}.nc"
+        a = (self.dlg.lineEdit_2.displayText())
+        b = (f"{filename}.nc")
+        default_temp_path = os.path.join(a, b)
+
+        # Write Xarray to netcdf
+        y.to_netcdf(default_temp_path)
+
+        # Creates new layer and adds to current project
+        self.iface.addRasterLayer(default_temp_path, "%s_%s_N%d_E%d_S%d_W%d_%s_%s" % (product, subproduct, north, east, south, west, start_datetime, end_datetime))
+
+    
     def run(self):
+        """
+        This prepares the user interface of the plugin and the performs the events 
+        once "OK" is clicked.
+        :return:
+        """
+
         # Create the dialog with elements (after translation) and keep reference
         # Only create GUI ONCE in callback, so that it will only load when the plugin is started
         if self.first_start == True:
@@ -272,13 +340,12 @@ class AssimilaDatacCube:
             self.dlg = AssimilaDatacCubeDialog(self.iface)
 
         # Clears the values from previous run
-        # Do not need to clear subproducts because it automatically updates
         self.dlg.lineEdit.clear() #keyfile
         self.dlg.lineEdit_2.clear() #rasterfile
 
         # Displays key file path location
-        self.key_file = os.path.join(os.path.dirname(__file__), ".assimila_dq")
-        #self.key_file = os.path.join(expanduser("~"), "Documents", "public-only-keyfile.txt")
+        #self.key_file = os.path.join(os.path.dirname(__file__), ".assimila_dq")
+        self.key_file = os.path.join(expanduser("~"), "Documents", ".assimila_dq") # default location
         self.dlg.lineEdit.insert(self.key_file)
 
         # Display default raster file path location
@@ -302,17 +369,14 @@ class AssimilaDatacCube:
             self.dlg.products_comboBox.addItems(products)
         
         # Display dropdown for subproducts
-        product = self.dlg.products_comboBox.currentText()
-        #self.dlg.products_comboBox.currentTextChanged.connect(lambda: self.subproduct_selectionchange()) # For updating the subproduct
-        self.dlg.subproducts_comboBox.addItem('rfe') # Defaulting 1st item in Product is 'TAMSAT' so 1st item in Subprodusct is 'rfe'
+        self.dlg.subproducts_comboBox.addItem('rfe') # Defaulting 1st item Subprodusct is 'rfe'
         """ Issue: for nth run, perform nth subproduct_selectionchange """
-        #self.dlg.products_comboBox.currentTextChanged.connect(self.subproduct_selectionchange) # For updating the subproduct
-        self.dlg.products_comboBox.currentTextChanged.connect(lambda: self.subproduct_selectionchange()) # For updating the subproduct
+        self.dlg.products_comboBox.currentTextChanged.connect(self.subproduct_selectionchange) # For updating the subproduct
         self.dlg.subproducts_comboBox.removeItem(1) # Removing default subproduct value of 'rfe'
 
         # Links the Radio buttons and datetime widgets
         self.dlg.multi_radioButton.toggled.connect(lambda: self.radio_btn_state(self.dlg.single_radioButton, self.dlg.dateTimeEdit_1, self.dlg.dateTimeEdit_2))
-        
+
         # Show the dialog
         self.dlg.show()
         # Run the dialog event loop
@@ -351,24 +415,12 @@ class AssimilaDatacCube:
 
             # Get Xarray from datacube
             y = self.get_data_from_datacube_nesw(product, subproduct, north, east, south, west, start, end)
-                     
-            # Re-formats the start and end dates and hour for filename
-            start_datetime = self.dlg.dateTimeEdit_1.dateTime().toString("yyyyMMdd_HH")
-            end_datetime = self.dlg.dateTimeEdit_2.dateTime().toString("yyyyMMdd_HH")
 
-            # Create filename and find its path
-            filename = "%s_%s_N%d_E%d_S%d_W%d_%s_%s" % (product, subproduct, north, east, south, west, start_datetime, end_datetime)
-            #default_temp_path = f"{tempfile.gettempdir()}/{filename}.nc"
-            a = (self.dlg.lineEdit_2.displayText())
-            b = (f"{filename}.nc")
-            default_temp_path = os.path.join(a, b)
-
-            # Write Xarray to netcdf
-            y.to_netcdf(default_temp_path)
-        
-            # Creates new layer and adds to current project
-            self.iface.addRasterLayer(default_temp_path, "%s_%s_N%d_E%d_S%d_W%d_%s_%s" % (product, subproduct, north, east, south, west, start_datetime, end_datetime))
+            # Write Xarray to file
+            self.create_raster_file(product, subproduct, north, east, south, west, y)
 
             pass
+
+
 
             

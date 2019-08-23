@@ -73,8 +73,8 @@ class AssimilaDatacCubeDialog(QtWidgets.QDialog, FORM_CLASS):
     def on_btn_browse_keyfile_clicked(self):
         # Gets directory for the keyfile - default: /users/{user_name}/Documents
         self.dir = QFileDialog.getExistingDirectory(None, self.tr("Open Directory"),
-                                                    os.path.dirname(__file__),
-                                                    #os.path.join(expanduser("~"), "Documents"),
+                                                    # os.path.dirname(__file__),
+                                                    os.path.join(expanduser("~"), "Documents"), # default location
                                                     QFileDialog.ShowDirsOnly 
                                                     | QFileDialog.DontResolveSymlinks)
 
