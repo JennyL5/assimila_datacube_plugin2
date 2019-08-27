@@ -26,6 +26,8 @@ from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QFileDialog
 from qgis.core import QgsProject, Qgis
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QMessageBox
+from qgis.utils import plugins, reloadPlugin, loadPlugin, startPlugin, isPluginLoaded
+
 import numpy as np
 
 # Initialize Qt resources from file resources.py
@@ -332,6 +334,9 @@ class AssimilaDatacCube:
         once "OK" is clicked.
         :return:
         """
+            
+        # Reloading the plugin
+        reloadPlugin('assimila_datacube')
 
         # Create the dialog with elements (after translation) and keep reference
         # Only create GUI ONCE in callback, so that it will only load when the plugin is started
