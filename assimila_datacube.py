@@ -28,14 +28,13 @@ from qgis.core import QgsProject, Qgis
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QMessageBox
 from qgis.utils import plugins, reloadPlugin, loadPlugin, startPlugin, isPluginLoaded
 
-import numpy as np
-
 # Initialize Qt resources from file resources.py
 from .resources import *
 # Import the code for the dialog
 from .assimila_datacube_dialog import AssimilaDatacCubeDialog
 import os.path
 from os.path import expanduser
+import numpy as np
 import tempfile
 
 # Import DQTools to set up connection to database
@@ -287,7 +286,11 @@ class AssimilaDatacCube:
         print(f"key_file location: {key_file}")
     
         # Using DQTools
-        query = Dataset(product=product, subproduct=subproduct, region=None, tile=None, res=None, key_file=key_file)
+        try:
+            query = Dataset(product=product, subproduct=subproduct, region=None, tile=None, res=None, key_file=key_file)
+        except Exception as e:
+            print("Wrong key_file location or contact Assimila for key file." + str(e))
+        
         region = [north, east, south, west]
         query.get_data(start = start, stop=end, region=region, tile=None, res=None,)
 
