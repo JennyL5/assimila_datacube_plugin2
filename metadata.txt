@@ -10,7 +10,7 @@ version=0.1
 author=Assimila
 email=jenny.lin@assimila.eu
 
-about=This plugin let's you visualise the datacube.
+about=This plugin lets you visualise the datacube.
 
 tracker=http://bugs
 repository=http://repo
