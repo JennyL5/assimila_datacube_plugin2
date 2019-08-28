@@ -286,11 +286,7 @@ class AssimilaDatacCube:
         print(f"key_file location: {key_file}")
     
         # Using DQTools
-        try:
-            query = Dataset(product=product, subproduct=subproduct, region=None, tile=None, res=None, key_file=key_file)
-        except Exception as e:
-            print("Wrong key_file location or contact Assimila for key file." + str(e))
-        
+        query = Dataset(product=product, subproduct=subproduct, region=None, tile=None, res=None, key_file=key_file)        
         region = [north, east, south, west]
         query.get_data(start = start, stop=end, region=region, tile=None, res=None,)
 
@@ -421,11 +417,14 @@ class AssimilaDatacCube:
             print(start)
             print(end)
 
-            # Get Xarray from datacube
-            y = self.get_data_from_datacube_nesw(product, subproduct, north, east, south, west, start, end)
-
-            # Write Xarray to file
-            self.create_raster_file(product, subproduct, north, east, south, west, y)
+            try: 
+                # Get Xarray from datacube
+                y = self.get_data_from_datacube_nesw(product, subproduct, north, east, south, west, start, end)
+        
+                # Write Xarray to file
+                self.create_raster_file(product, subproduct, north, east, south, west, y)
+            except Exception as e:
+                print("Wrong key_file location or contact Assimila for key file." + str(e))
 
             pass
 
