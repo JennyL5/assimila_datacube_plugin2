@@ -47,3 +47,4 @@ To import pluging:
 * QGIS Plugin Builder 
 
 
+# assimila_datacube_plugin2
