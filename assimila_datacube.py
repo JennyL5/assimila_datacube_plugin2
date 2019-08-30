@@ -40,6 +40,7 @@ import tempfile
 # Import DQTools to set up connection to database
 from .DQTools.DQTools import Search, Dataset 
 
+from .nesw_dialog import Ui_NESW_Dialog
 
 class AssimilaDatacCube:
     """QGIS Plugin Implementation."""
@@ -326,7 +327,31 @@ class AssimilaDatacCube:
         # Creates new layer and adds to current project
         self.iface.addRasterLayer(default_temp_path, "%s_%s_N%d_E%d_S%d_W%d_%s_%s" % (product, subproduct, north, east, south, west, start_datetime, end_datetime))
 
-    
+    def select_coords(self, r1, r2, r3):
+        """
+        Enables and disables the different options for selecting co-ordinates
+        of the counding box.
+        :param r1: self.dlg.nesw_radioButton
+        :param r2: self.dlg.set_canvas_radioButton
+        :param r3: self.dlg.search_tile_radioButton
+        :return:
+        """
+            #r1
+        if r1.isChecked() == True:
+            self.dlg.nesw_frame.show()
+            self.dlg.search_tile_frame.hide()
+            print("nesw is checked")
+        elif r2.isChecked() == True:
+            self.dlg.nesw_frame.hide()
+            self.dlg.search_tile_frame.hide()
+            print("set canvas is checked")
+        elif r3.isChecked() == True:
+            self.dlg.search_tile_frame.show()
+            self.dlg.nesw_frame.hide()
+            self.dlg.search_tile_frame.show()
+            print("search tile is checked")
+
+
     def run(self):
         """
         This prepares the user interface of the plugin and the performs the events 
@@ -342,6 +367,19 @@ class AssimilaDatacCube:
         if self.first_start == True:
             self.first_start = False
             self.dlg = AssimilaDatacCubeDialog(self.iface)
+
+        #self.dlg.nesw_frame.hide()
+        self.dlg.search_tile_frame.hide()
+
+        #self.dlg.nesw_radioButton.setChecked(True)
+        #self.dlg.nesw_frame.hide()
+  
+
+        #self.dlg.nesw_radioButton.toggled.connect(lambda: self.select_coords(self.dlg.nesw_radioButton, self.dlg.set_canvas_radioButton, self.dlg.search_tile_radioButton))
+        #self.dlg.set_canvas_radioButton.toggled.connect(lambda: self.select_coords(self.dlg.nesw_radioButton, self.dlg.set_canvas_radioButton, self.dlg.search_tile_radioButton))
+        #self.dlg.search_tile_radioButton.toggled.connect(lambda: self.select_coords(self.dlg.nesw_radioButton, self.dlg.set_canvas_radioButton, self.dlg.search_tile_radioButton))
+
+        #self.select_coords(self)
 
         # Clears the values from previous run
         self.dlg.lineEdit.clear() #keyfile

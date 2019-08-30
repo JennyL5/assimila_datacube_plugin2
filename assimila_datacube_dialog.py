@@ -33,6 +33,11 @@ from qgis.PyQt import QtWidgets
 from qgis.core import (QgsProcessingParameterString,)
 from qgis.PyQt.QtNetwork import QNetworkRequest, QNetworkReply,  QNetworkAccessManager
 
+from .nesw_dialog import Ui_NESW_Dialog
+from .canvas_dialog import Ui_canvas_Dialog
+from .search_dialog import Ui_search_Dialog
+
+
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'assimila_datacube_dialog_base.ui'))
@@ -49,6 +54,55 @@ class AssimilaDatacCubeDialog(QtWidgets.QDialog, FORM_CLASS):
         super(AssimilaDatacCubeDialog, self).__init__(parent)
         self.setupUi(self)
         self.iface = iface
+        self.nesw_radioButton.toggled.connect(self.on_nesw_radioButton_clicked)
+        self.set_canvas_radioButton.toggled.connect(self.on_set_canvas_radioButton_clicked)
+        self.search_tile_radioButton.toggled.connect(self.on_search_tile_radioButton_clicked)
+
+    def add_coordinates_to_UI(self, coordinates):
+        north=coordinates[0]
+        east=coordinates[1]
+        south=coordinates[2]
+        west=coordinates[3]
+        self.N_spinBox.setValue(north)
+        self.E_spinBox.setValue(east)
+        self.S_spinBox.setValue(south)
+        self.W_spinBox.setValue(west)
+
+
+    @pyqtSlot()
+    def on_nesw_radioButton_clicked(self):
+        print("nesw clicked")
+        NESW_Dialog = QtWidgets.QDialog()
+        ui = Ui_NESW_Dialog()
+        ui.setupUi(NESW_Dialog)
+        #resp = NESW_Dialog.exec_()
+        NESW_Dialog.exec_()
+        coordinates = ui.get_values()
+        print(coordinates)
+        self.add_coordinates_to_UI(coordinates)
+        
+    
+    def on_set_canvas_radioButton_clicked(self):
+        print("set canvas clicked")
+        canvas_Dialog = QtWidgets.QDialog()
+        ui = Ui_canvas_Dialog(self.iface)
+        ui.setupUi(canvas_Dialog)
+        #resp = canvas_Dialog.exec_()
+        #print(canvas_Dialog.search_tile.displayText())
+        canvas_Dialog.exec_()
+        coordinates = ui.get_values()
+        self.add_coordinates_to_UI(coordinates)
+
+
+    def on_search_tile_radioButton_clicked(self):
+        print("search tile clicked")
+        search_Dialog = QtWidgets.QDialog()
+        ui = Ui_search_Dialog()
+        ui.setupUi(search_Dialog)
+        #resp = search_Dialog.exec_()
+        search_Dialog.exec_()
+        coordinates = ui.get_values()
+        self.add_coordinates_to_UI(coordinates)
 
 
     @pyqtSlot()

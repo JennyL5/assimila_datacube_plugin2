@@ -6,7 +6,7 @@
 name=Assimila Data Cube
 qgisMinimumVersion=3.0
 description=This plugin lets you visualise the datacube.
-version=0.1
+version=0.2
 author=Assimila
 email=jenny.lin@assimila.eu
 
