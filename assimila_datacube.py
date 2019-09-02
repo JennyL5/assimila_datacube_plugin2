@@ -41,6 +41,9 @@ import tempfile
 from .DQTools.DQTools import Search, Dataset 
 
 from .nesw_dialog import Ui_NESW_Dialog
+from .canvas_dialog import Ui_canvas_Dialog
+from .search_dialog import Ui_search_Dialog
+from qgis.gui import QgsMapCanvas
 
 class AssimilaDatacCube:
     """QGIS Plugin Implementation."""
@@ -83,6 +86,7 @@ class AssimilaDatacCube:
         # Must be set in initGui() to survive plugin reloads
         self.first_start = None
         self.dlg = AssimilaDatacCubeDialog(iface)
+
 
 
     # noinspection PyMethodMayBeStatic
@@ -247,7 +251,6 @@ class AssimilaDatacCube:
         print(subproducts)
         self.dlg.subproducts_comboBox.addItems(subproducts) 
 
-
     def radio_btn_state(self, b, dt1, dt2):
         """
         Enables and disables the date and hour picker widgets when
@@ -351,7 +354,6 @@ class AssimilaDatacCube:
             self.dlg.search_tile_frame.show()
             print("search tile is checked")
 
-
     def run(self):
         """
         This prepares the user interface of the plugin and the performs the events 
@@ -369,7 +371,6 @@ class AssimilaDatacCube:
             self.dlg = AssimilaDatacCubeDialog(self.iface)
 
         #self.dlg.nesw_frame.hide()
-        self.dlg.search_tile_frame.hide()
 
         #self.dlg.nesw_radioButton.setChecked(True)
         #self.dlg.nesw_frame.hide()
@@ -380,6 +381,9 @@ class AssimilaDatacCube:
         #self.dlg.search_tile_radioButton.toggled.connect(lambda: self.select_coords(self.dlg.nesw_radioButton, self.dlg.set_canvas_radioButton, self.dlg.search_tile_radioButton))
 
         #self.select_coords(self)
+
+        #canvas = QgsMapCanvas()
+
 
         # Clears the values from previous run
         self.dlg.lineEdit.clear() #keyfile

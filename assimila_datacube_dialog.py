@@ -37,6 +37,17 @@ from .nesw_dialog import Ui_NESW_Dialog
 from .canvas_dialog import Ui_canvas_Dialog
 from .search_dialog import Ui_search_Dialog
 
+from qgis.core import *
+from qgis.gui import QgsMapCanvas
+from qgis.utils import iface
+
+
+"""
+import matplotlib.pyplot as plt
+import cartopy.crs as ccrs
+import cartopy.feature as cfeature
+from matplotlib.offsetbox import AnchoredText
+"""
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
@@ -58,6 +69,10 @@ class AssimilaDatacCubeDialog(QtWidgets.QDialog, FORM_CLASS):
         self.set_canvas_radioButton.toggled.connect(self.on_set_canvas_radioButton_clicked)
         self.search_tile_radioButton.toggled.connect(self.on_search_tile_radioButton_clicked)
 
+        #layerPath = QgsApplication.instance().pkgDataPath() + '/resources/data/world_map.shp'
+        #self.mapLayers = [QgsVectorLayer(layerPath)]
+
+    
     def add_coordinates_to_UI(self, coordinates):
         north=coordinates[0]
         east=coordinates[1]
@@ -67,44 +82,106 @@ class AssimilaDatacCubeDialog(QtWidgets.QDialog, FORM_CLASS):
         self.E_spinBox.setValue(east)
         self.S_spinBox.setValue(south)
         self.W_spinBox.setValue(west)
+        #self.show_canvas()
+        #self.update_map()
+    
+    def update_map(self):
+        """
+        ax = plt.axes(projection=ccrs.PlateCarree())
+        ax.set_extent([180, -180, -90, 90])
+        ax.add_feature(cfeature.LAND)
+        ax.add_feature(cfeature.OCEAN)
+        ax.add_feature(cfeature.COASTLINE)
+        #self.MplWidget.canvas.add_subplot(111)
+        #plt.show()
+        self.MplWidget.canvas.draw()
+        ds.close()
+        """
+
+        print("updating map")
+        canvas = QgsMapCanvas()
+        print(canvas.mapTool)
+        #r = QgsRubberBand(canvas, True)  # True = a polygon
+        #points = [[QgsPoint(-1, -1), QgsPoint(0, 1), QgsPoint(1, -1)]]
+        #r.setToGeometry(QgsGeometry.fromPolygon(points), None)
+        """
+        layer = QgsVectorLayer(path, name, provider)
+        if not layer.isValid():
+            raise IOError ("Failed to open the layer")
+
+        # add layer to the registry
+        QgsMapLayerRegistry.instance().addMapLayer(layer)
+
+        # set extent to the extent of our layer
+        canvas.setExtent(layer.extent())
+
+        # set the map canvas layer set
+        canvas.setLayerSet([QgsMapCanvasLayer(layer)])
+        """
+        #self.canvas = QgsMapCanvas()
+        #self.canvas.setCanvasColor(Qt.white)
+       # self.canvas.setExtent(layer.extent())
+        #self.canvas.setLayerSet([QgsMapCanvasLayer(layer)])
+
+        #print(canvas)
+       # canvas.setCanvasColor(Qt.black)
+        #canvas.enableAntiAliasing(True)
+       # canvas.show()
+        canvas = iface.mapCanvas()
+        print(canvas.size())
+        canvas.show()
 
 
+        #self.mAreaCanvas.setLayers(self.mapLayers)
+        #self.mAreaCanvas.zoomToFullExtent()
+        #super().show()
+  
     @pyqtSlot()
     def on_nesw_radioButton_clicked(self):
         print("nesw clicked")
         NESW_Dialog = QtWidgets.QDialog()
         ui = Ui_NESW_Dialog()
         ui.setupUi(NESW_Dialog)
-        #resp = NESW_Dialog.exec_()
-        NESW_Dialog.exec_()
-        coordinates = ui.get_values()
-        print(coordinates)
-        self.add_coordinates_to_UI(coordinates)
-        
+        res = NESW_Dialog.exec_()
+        if res == QtWidgets.QDialog.Accepted:
+            print("Ok button was clicked")
+            coordinates = ui.get_values()
+            print(coordinates)
+            self.add_coordinates_to_UI(coordinates)
+        else:
+            print("cancelled was clicked")
     
+    @pyqtSlot()  
     def on_set_canvas_radioButton_clicked(self):
         print("set canvas clicked")
         canvas_Dialog = QtWidgets.QDialog()
-        ui = Ui_canvas_Dialog(self.iface)
-        ui.setupUi(canvas_Dialog)
-        #resp = canvas_Dialog.exec_()
-        #print(canvas_Dialog.search_tile.displayText())
-        canvas_Dialog.exec_()
-        coordinates = ui.get_values()
-        self.add_coordinates_to_UI(coordinates)
+        ui = Ui_canvas_Dialog()
+        ui.setupUi(self.iface, canvas_Dialog)
+        res = canvas_Dialog.exec_()
+        if res == QtWidgets.QDialog.Accepted:
+            print("Ok button was clicked")
+            coordinates = ui.get_values()
+            print(coordinates)
+            self.add_coordinates_to_UI(coordinates)
+        else:
+            print("cancelled was clicked")
 
-
+    @pyqtSlot()
     def on_search_tile_radioButton_clicked(self):
         print("search tile clicked")
         search_Dialog = QtWidgets.QDialog()
         ui = Ui_search_Dialog()
         ui.setupUi(search_Dialog)
-        #resp = search_Dialog.exec_()
-        search_Dialog.exec_()
-        coordinates = ui.get_values()
-        self.add_coordinates_to_UI(coordinates)
+        res = search_Dialog.exec_()
+        if res == QtWidgets.QDialog.Accepted:
+            print("Ok button was clicked")
+            coordinates = ui.get_values()
+            print(coordinates)
+            self.add_coordinates_to_UI(coordinates)
+        else:
+            print("cancelled was clicked")
 
-
+    """
     @pyqtSlot()
     def on_btn_extent_clicked(self):
 
@@ -122,7 +199,8 @@ class AssimilaDatacCubeDialog(QtWidgets.QDialog, FORM_CLASS):
         self.S_spinBox.setValue((math.floor(extent.yMinimum())))
         self.N_spinBox.setValue((math.ceil(extent.yMaximum())))
         #print('set canvas')
-    
+    """
+
     @pyqtSlot()
     def on_btn_browse_keyfile_clicked(self):
         # Gets directory for the keyfile - default: /users/{user_name}/Documents
@@ -150,3 +228,17 @@ class AssimilaDatacCubeDialog(QtWidgets.QDialog, FORM_CLASS):
         # Displays in lineEdit   "Users\Jenny\AppData\Local\Temp"                        
         self.lineEdit_2.setText(self.dir)
         
+    def show_canvas(self):
+
+        new_dialog = QDialog()
+        new_dialog.resize(800, 600)
+
+        map_canvas = QgsMapCanvas(new_dialog)
+        map_canvas.setMinimumSize(800, 600)
+
+        layers =  QgsProject.instance().mapLayers()
+        map_canvas_layer_list = [l for l in layers.values()]
+        map_canvas.setLayers(map_canvas_layer_list)
+        map_canvas.setExtent(iface.mapCanvas().extent())
+
+        new_dialog.show()

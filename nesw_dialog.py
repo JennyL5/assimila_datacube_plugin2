@@ -94,10 +94,10 @@ class Ui_NESW_Dialog(QDialog, FORM_CLASS):
         self.Description.setObjectName("Description")
 
         self.retranslateUi(NESW_Dialog)
-        #self.buttonBox.accepted.connect(NESW_Dialog.accept)
-        #self.buttonBox.rejected.connect(NESW_Dialog.reject)
-        self.buttonBox.accepted.connect(self.on_buttonBox_accepted)
-        self.buttonBox.rejected.connect(self.on_buttonBox_rejected)
+        self.buttonBox.accepted.connect(NESW_Dialog.accept)
+        self.buttonBox.rejected.connect(NESW_Dialog.reject)
+        #self.buttonBox.accepted.connect(self.on_buttonBox_accepted)
+        #self.buttonBox.rejected.connect(self.on_buttonBox_rejected)
 
         QtCore.QMetaObject.connectSlotsByName(NESW_Dialog)
 
@@ -110,7 +110,6 @@ class Ui_NESW_Dialog(QDialog, FORM_CLASS):
         self.label_7.setText(_translate("NESW_Dialog", "West"))
         self.Description.setText(_translate("NESW_Dialog", "A QGIS plugin to visualise a datacube"))
 
-    
     def get_values(self):   
 
         n = self.N_spinBox.value()
@@ -118,7 +117,7 @@ class Ui_NESW_Dialog(QDialog, FORM_CLASS):
         s = self.S_spinBox.value()
         w = self.W_spinBox.value()
         return n,e,s,w
-    
+    """
     @pyqtSlot()
     def on_buttonBox_accepted(self):
     
@@ -127,18 +126,13 @@ class Ui_NESW_Dialog(QDialog, FORM_CLASS):
         south = self.S_spinBox.value()
         west = self.W_spinBox.value()
         print("north: %s east %s south: %s west %s" % (str(north), str(east), str(south), str(west)))
-        self.accept()
-        self.close()
-        print(self.close())
-        
+        self.accept()        
 
     @pyqtSlot()
     def on_buttonBox_rejected(self):
-
         # TODO: not implemented yet
         self.reject()
-        self.close()
-
+    """
 
     if __name__ == "__main__":
         import sys
