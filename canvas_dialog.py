@@ -99,22 +99,6 @@ class Ui_canvas_Dialog(QDialog, FORM_CLASS):
         self.label_7.setText(_translate("canvas_Dialog", "West"))
         self.label_6.setText(_translate("canvas_Dialog", "South"))
 
-    @pyqtSlot()
-    def on_buttonBox_accepted(self):
-    
-        north = self.N_spinBox.value()
-        east = self.E_spinBox.value()
-        south = self.S_spinBox.value()
-        west = self.W_spinBox.value()
-        print("north: %s east %s south: %s west %s" % (str(north), str(east), str(south), str(west)))
-        self.accept()
-        
-
-    @pyqtSlot()
-    def on_buttonBox_rejected(self):
-
-        # TODO: not implemented yet
-        self.reject()
 
     #@pyqtSlot()
     def on_btn_extent(self, iface):
@@ -135,7 +119,6 @@ class Ui_canvas_Dialog(QDialog, FORM_CLASS):
     
         
     def get_values(self):   
-
         n = self.N_spinBox.value()
         e = self.E_spinBox.value()
         s = self.S_spinBox.value()

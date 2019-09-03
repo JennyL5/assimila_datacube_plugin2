@@ -65,25 +65,10 @@ class AssimilaDatacCubeDialog(QtWidgets.QDialog, FORM_CLASS):
         super(AssimilaDatacCubeDialog, self).__init__(parent)
         self.setupUi(self)
         self.iface = iface
-        self.nesw_radioButton.toggled.connect(self.on_nesw_radioButton_clicked)
-        self.set_canvas_radioButton.toggled.connect(self.on_set_canvas_radioButton_clicked)
-        self.search_tile_radioButton.toggled.connect(self.on_search_tile_radioButton_clicked)
+        #self.nesw_radioButton.toggled.connect(self.on_nesw_radioButton_clicked)
+        #self.set_canvas_radioButton.toggled.connect(self.on_set_canvas_radioButton_clicked)
+        #self.search_tile_radioButton.toggled.connect(self.on_search_tile_radioButton_clicked)
 
-        #layerPath = QgsApplication.instance().pkgDataPath() + '/resources/data/world_map.shp'
-        #self.mapLayers = [QgsVectorLayer(layerPath)]
-
-    
-    def add_coordinates_to_UI(self, coordinates):
-        north=coordinates[0]
-        east=coordinates[1]
-        south=coordinates[2]
-        west=coordinates[3]
-        self.N_spinBox.setValue(north)
-        self.E_spinBox.setValue(east)
-        self.S_spinBox.setValue(south)
-        self.W_spinBox.setValue(west)
-        #self.show_canvas()
-        #self.update_map()
     
     def update_map(self):
         """
@@ -135,7 +120,7 @@ class AssimilaDatacCubeDialog(QtWidgets.QDialog, FORM_CLASS):
         #self.mAreaCanvas.setLayers(self.mapLayers)
         #self.mAreaCanvas.zoomToFullExtent()
         #super().show()
-  
+    """
     @pyqtSlot()
     def on_nesw_radioButton_clicked(self):
         print("nesw clicked")
@@ -148,8 +133,10 @@ class AssimilaDatacCubeDialog(QtWidgets.QDialog, FORM_CLASS):
             coordinates = ui.get_values()
             print(coordinates)
             self.add_coordinates_to_UI(coordinates)
+            ui.accept()
         else:
             print("cancelled was clicked")
+            ui.reject()
     
     @pyqtSlot()  
     def on_set_canvas_radioButton_clicked(self):
@@ -180,27 +167,7 @@ class AssimilaDatacCubeDialog(QtWidgets.QDialog, FORM_CLASS):
             self.add_coordinates_to_UI(coordinates)
         else:
             print("cancelled was clicked")
-
-    """
-    @pyqtSlot()
-    def on_btn_extent_clicked(self):
-
-        # Gets the coordinates of the extent
-        crsDest = QgsCoordinateReferenceSystem(4326)  # WGS84
-        crsSrc =self.iface.mapCanvas().mapSettings().destinationCrs()
-        xform = QgsCoordinateTransform()
-        xform.setSourceCrs(crsSrc)
-        xform.setDestinationCrs(crsDest)
-        extent = xform.transform(self.iface.mapCanvas().extent())
-
-        # Sets the value to the individual widgets
-        self.W_spinBox.setValue((math.floor(extent.xMinimum())))
-        self.E_spinBox.setValue((math.ceil(extent.xMaximum())))
-        self.S_spinBox.setValue((math.floor(extent.yMinimum())))
-        self.N_spinBox.setValue((math.ceil(extent.yMaximum())))
-        #print('set canvas')
-    """
-
+   """
     @pyqtSlot()
     def on_btn_browse_keyfile_clicked(self):
         # Gets directory for the keyfile - default: /users/{user_name}/Documents

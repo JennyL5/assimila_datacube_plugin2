@@ -22,23 +22,7 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'nesw_dialog.ui'))
 
 class Ui_NESW_Dialog(QDialog, FORM_CLASS):
-    def __init__(self, parent=None):
-        """
-        Constructor
-        
-        @param parent reference to the parent widget
-        @type QWidget
-        """
-        super(Ui_NESW_Dialog, self).__init__(parent)
-        self.setupUi(self)
-        #self.N_spinBox.setValue(5)
-        #self.E_spinBox.setValue(5)
-        #self.S_spinBox.setValue(4)
-        #self.W_spinBox.setValue(2)
-        #self.buttonBox.accepted.connect(self.on_buttonBox_accepted)
-        #self.buttonBox.rejected.connect(self.on_buttonBox_rejected)
-
-
+    
     def setupUi(self, NESW_Dialog):
         NESW_Dialog.setObjectName("NESW_Dialog")
         NESW_Dialog.resize(546, 492)
@@ -101,7 +85,6 @@ class Ui_NESW_Dialog(QDialog, FORM_CLASS):
 
         QtCore.QMetaObject.connectSlotsByName(NESW_Dialog)
 
-
     def retranslateUi(self, NESW_Dialog):
         _translate = QtCore.QCoreApplication.translate
         NESW_Dialog.setWindowTitle(_translate("NESW_Dialog", "Dialog"))
@@ -109,7 +92,8 @@ class Ui_NESW_Dialog(QDialog, FORM_CLASS):
         self.label_6.setText(_translate("NESW_Dialog", "South"))
         self.label_7.setText(_translate("NESW_Dialog", "West"))
         self.Description.setText(_translate("NESW_Dialog", "A QGIS plugin to visualise a datacube"))
-
+    
+    
     def get_values(self):   
 
         n = self.N_spinBox.value()
@@ -117,29 +101,13 @@ class Ui_NESW_Dialog(QDialog, FORM_CLASS):
         s = self.S_spinBox.value()
         w = self.W_spinBox.value()
         return n,e,s,w
-    """
-    @pyqtSlot()
-    def on_buttonBox_accepted(self):
     
-        north = self.N_spinBox.value()
-        east = self.E_spinBox.value()
-        south = self.S_spinBox.value()
-        west = self.W_spinBox.value()
-        print("north: %s east %s south: %s west %s" % (str(north), str(east), str(south), str(west)))
-        self.accept()        
-
-    @pyqtSlot()
-    def on_buttonBox_rejected(self):
-        # TODO: not implemented yet
-        self.reject()
-    """
-
     if __name__ == "__main__":
         import sys
         app = QtWidgets.QApplication(sys.argv)
         NESW_Dialog = QtWidgets.QDialog()
         ui = Ui_NESW_Dialog()
         ui.setupUi(NESW_Dialog)
-        NESW_Dialog.show()
-        Dialog_exec_()
+        #NESW_Dialog.show()
+        #Dialog_exec_()
         sys.exit(app.exec_())

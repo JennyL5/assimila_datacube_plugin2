@@ -24,9 +24,13 @@
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QFileDialog
-from qgis.core import QgsProject, Qgis
+from qgis.core import *
+from qgis.core import QgsProject, Qgis, QgsPointXY, QgsGeometry, QgsPoint, QgsVectorLayer
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QMessageBox
+from PyQt5.QtGui import QColor
 from qgis.utils import plugins, reloadPlugin, loadPlugin, startPlugin, isPluginLoaded
+
+from qgis.PyQt.QtNetwork import QNetworkRequest, QNetworkReply,  QNetworkAccessManager
 
 # Initialize Qt resources from file resources.py
 from .resources import *
@@ -37,13 +41,15 @@ from os.path import expanduser
 import numpy as np
 import tempfile
 
+
 # Import DQTools to set up connection to database
 from .DQTools.DQTools import Search, Dataset 
 
 from .nesw_dialog import Ui_NESW_Dialog
 from .canvas_dialog import Ui_canvas_Dialog
 from .search_dialog import Ui_search_Dialog
-from qgis.gui import QgsMapCanvas
+from qgis.gui import QgsMapCanvas, QgsRubberBand
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 class AssimilaDatacCube:
     """QGIS Plugin Implementation."""
@@ -86,8 +92,6 @@ class AssimilaDatacCube:
         # Must be set in initGui() to survive plugin reloads
         self.first_start = None
         self.dlg = AssimilaDatacCubeDialog(iface)
-
-
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -212,6 +216,11 @@ class AssimilaDatacCube:
         :return:
         """
 
+        north = float(north)
+        east = float(east)
+        south = float(south)
+        west = float(west)
+
         # check start is after end date
         if str(end)<str(start):
             raise ValueError('End date should not be before start date')
@@ -232,10 +241,11 @@ class AssimilaDatacCube:
             raise ValueError('North value should be greater than south')
         
         # check area of box is less than 25*25=625
-        print ('N-S=' + str(north - south))
-        print ('E-W=' + str(east - west))
-        print ('Total area = ' + str((north - south) * (east - west))) 
-        if (north - south) * (east - west) > 625:
+        #print ('N-S=' + str(north - south))
+        #print ('E-W=' + str(east - west))
+        #print ('Total area = ' + str((north - south) * (east - west))) 
+   
+        if (north-south)*(east-west) > 625:
             raise ValueError('Exceeded maximum area of canvas')
 
     def subproduct_selectionchange(self):
@@ -330,29 +340,107 @@ class AssimilaDatacCube:
         # Creates new layer and adds to current project
         self.iface.addRasterLayer(default_temp_path, "%s_%s_N%d_E%d_S%d_W%d_%s_%s" % (product, subproduct, north, east, south, west, start_datetime, end_datetime))
 
-    def select_coords(self, r1, r2, r3):
-        """
-        Enables and disables the different options for selecting co-ordinates
-        of the counding box.
-        :param r1: self.dlg.nesw_radioButton
-        :param r2: self.dlg.set_canvas_radioButton
-        :param r3: self.dlg.search_tile_radioButton
-        :return:
-        """
-            #r1
-        if r1.isChecked() == True:
-            self.dlg.nesw_frame.show()
-            self.dlg.search_tile_frame.hide()
-            print("nesw is checked")
-        elif r2.isChecked() == True:
-            self.dlg.nesw_frame.hide()
-            self.dlg.search_tile_frame.hide()
-            print("set canvas is checked")
-        elif r3.isChecked() == True:
-            self.dlg.search_tile_frame.show()
-            self.dlg.nesw_frame.hide()
-            self.dlg.search_tile_frame.show()
-            print("search tile is checked")
+    def add_coordinates_to_UI(self, coordinates): 
+        north=coordinates[0]
+        east=coordinates[1]
+        south=coordinates[2]
+        west=coordinates[3]
+        self.dlg.N_box.setText(str(north))
+        self.dlg.E_box.setText(str(east))
+        self.dlg.S_box.setText(str(south))
+        self.dlg.W_box.setText(str(west))
+        self.dlg.N_box.setDisabled(True)
+        self.dlg.E_box.setDisabled(True)
+        self.dlg.S_box.setDisabled(True)
+        self.dlg.W_box.setDisabled(True)
+        #self.show_canvas()
+        #self.update_map()
+        self.update_map( north, east, south, west)
+
+    def on_nesw_radioButton_clicked(self):
+        print("nesw clicked")
+        NESW_Dialog = QtWidgets.QDialog()
+        ui = Ui_NESW_Dialog()
+        ui.setupUi(NESW_Dialog)
+        res = NESW_Dialog.exec_()
+        if res == QtWidgets.QDialog.Accepted:
+            print("Ok button was clicked")
+            coordinates = ui.get_values()
+            print(coordinates)
+            self.add_coordinates_to_UI(coordinates)
+        else:
+            print("cancelled was clicked")
+    
+    def on_set_canvas_radioButton_clicked(self):
+        print("set canvas clicked")
+        canvas_Dialog = QtWidgets.QDialog()
+        ui = Ui_canvas_Dialog()
+        ui.setupUi(self.iface, canvas_Dialog)
+        res = canvas_Dialog.exec_()
+        if res == QtWidgets.QDialog.Accepted:
+            print("Ok button was clicked")
+            coordinates = ui.get_values()
+            print(coordinates)
+            self.add_coordinates_to_UI(coordinates)
+        else:
+            print("cancelled was clicked")
+
+    def on_search_tile_radioButton_clicked(self):
+        print("search tile clicked")
+        search_Dialog = QtWidgets.QDialog()
+        ui = Ui_search_Dialog()
+        ui.setupUi(search_Dialog)
+        res = search_Dialog.exec_()
+        if res == QtWidgets.QDialog.Accepted:
+            print("Ok button was clicked")
+            coordinates = ui.get_values()
+            print(coordinates)
+            self.add_coordinates_to_UI(coordinates)
+        else:
+            print("cancelled was clicked")
+
+    def update_map(self, north, east, south, west):
+        from qgis.utils import iface
+        from qgis.PyQt.QtCore import Qt
+
+        crsDest = QgsCoordinateReferenceSystem(4326)  # WGS84 source
+        crsSrc = self.iface.mapCanvas().mapSettings().destinationCrs() # target
+        xform = QgsCoordinateTransform()
+        xform.setSourceCrs(crsSrc)
+        xform.setDestinationCrs(crsDest)
+        print("north: %s, east: %s, south: %s, west: %s " % (north, east, south, west))
+
+        #p1 = xform.transform(QgsPointXY(west*10000000, north*10000000))
+        #p2 = xform.transform(QgsPointXY(east*10000000, north*10000000))
+        #p3 = xform.transform(QgsPointXY(east*10000000, south*10000000))
+        #p4 = xform.transform(QgsPointXY(west*10000000, south*10000000))
+
+        #canvas = iface.mapCanvas() # set it to canvas
+        #canvas.refresh()
+
+        canvas = QgsMapCanvas(self.dlg.QgsMapCanvas_wid)
+        canvas.setMinimumSize(460, 250)
+        layers = QgsProject.instance().mapLayers()
+        canvas_layer_list = [l for l in layers.values()]
+        canvas.setLayers(canvas_layer_list)
+        canvas.zoomToFullExtent()
+        
+        north = north*100000
+        east = east*100000
+        south = south*100000
+        west = west*100000
+
+        r = QgsRubberBand(canvas, True)  # True = a polygon
+        #points = [[QgsPointXY(-8990718, -282408), QgsPointXY(-6467587, -353010), QgsPointXY(-6369620, -1023845),QgsPointXY(-8624471, -1915078)]]
+        #points = [[QgsPointXY(p1), QgsPointXY(p2), QgsPointXY(p3), QgsPointXY(p4)]]
+        points = [[QgsPointXY(west, north), QgsPointXY(east, north), QgsPointXY(east, south), QgsPointXY(west, south)]]
+        #points = [[QgsPointXY(-19, 38), QgsPointXY(53, 38), QgsPointXY(53, -36),QgsPointXY(-19, -36)]] #africa
+        r.setToGeometry(QgsGeometry.fromPolygonXY(points), None)
+        r.setColor(QColor(255, 0, 0, 20)) #R,G,B,Transparency
+        r.setWidth(1)
+        print(points)
+        canvas.show()
+
 
     def run(self):
         """
@@ -370,20 +458,16 @@ class AssimilaDatacCube:
             self.first_start = False
             self.dlg = AssimilaDatacCubeDialog(self.iface)
 
-        #self.dlg.nesw_frame.hide()
-
-        #self.dlg.nesw_radioButton.setChecked(True)
-        #self.dlg.nesw_frame.hide()
-  
-
-        #self.dlg.nesw_radioButton.toggled.connect(lambda: self.select_coords(self.dlg.nesw_radioButton, self.dlg.set_canvas_radioButton, self.dlg.search_tile_radioButton))
-        #self.dlg.set_canvas_radioButton.toggled.connect(lambda: self.select_coords(self.dlg.nesw_radioButton, self.dlg.set_canvas_radioButton, self.dlg.search_tile_radioButton))
-        #self.dlg.search_tile_radioButton.toggled.connect(lambda: self.select_coords(self.dlg.nesw_radioButton, self.dlg.set_canvas_radioButton, self.dlg.search_tile_radioButton))
-
-        #self.select_coords(self)
-
-        #canvas = QgsMapCanvas()
-
+        map_canvas = QgsMapCanvas(self.dlg.QgsMapCanvas_wid)
+        map_canvas.setMinimumSize(460, 250)
+        layers = QgsProject.instance().mapLayers()
+        map_canvas_layer_list = [l for l in layers.values()]
+        map_canvas.setLayers(map_canvas_layer_list)
+        print(map_canvas.layers())
+        map_canvas.setExtent(self.iface.mapCanvas().extent())
+        #map_canvas.setExtent(map_canvas_layer_list[1].extent())
+        #map_canvas.zoomToFullExtent()
+        map_canvas.show()
 
         # Clears the values from previous run
         self.dlg.lineEdit.clear() #keyfile
@@ -423,6 +507,12 @@ class AssimilaDatacCube:
         # Links the Radio buttons and datetime widgets
         self.dlg.multi_radioButton.toggled.connect(lambda: self.radio_btn_state(self.dlg.single_radioButton, self.dlg.dateTimeEdit_1, self.dlg.dateTimeEdit_2))
 
+        # Links the radio buttons to their actions once clicked
+        self.dlg.nesw_radioButton.toggled.connect(self.on_nesw_radioButton_clicked)
+        self.dlg.set_canvas_radioButton.toggled.connect(self.on_set_canvas_radioButton_clicked)
+        self.dlg.search_tile_radioButton.toggled.connect(self.on_search_tile_radioButton_clicked)
+
+
         # Show the dialog
         self.dlg.show()
         # Run the dialog event loop
@@ -436,13 +526,13 @@ class AssimilaDatacCube:
             print(f"The product being run is {product}")
             subproduct = self.dlg.subproducts_comboBox.currentText()
             print(f"The subproduct being run is {subproduct}")
-            north = self.dlg.N_spinBox.value()
+            north = float(self.dlg.N_box.displayText())
             print('N: ' + str(north))
-            east = self.dlg.E_spinBox.value()
+            east = float(self.dlg.E_box.displayText())
             print('E: ' + str(east))
-            south = self.dlg.S_spinBox.value()
+            south = float(self.dlg.S_box.displayText())
             print('S: ' + str(south))
-            west = self.dlg.W_spinBox.value()
+            west = float(self.dlg.W_box.displayText())
             print('W: ' + str(west))
 
             # Format start and end dates and hour for datecube
@@ -462,7 +552,7 @@ class AssimilaDatacCube:
             try: 
                 # Get Xarray from datacube
                 y = self.get_data_from_datacube_nesw(product, subproduct, north, east, south, west, start, end)
-        
+    
                 # Write Xarray to file
                 self.create_raster_file(product, subproduct, north, east, south, west, y)
             except Exception as e:

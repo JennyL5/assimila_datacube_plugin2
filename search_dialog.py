@@ -120,22 +120,17 @@ class Ui_search_Dialog(QDialog, FORM_CLASS):
         self.label_6.setText(_translate("search_Dialog", "South"))
         self.btn_search_tile.setText(_translate("search_Dialog", "Search"))
     
-
-    @pyqtSlot()
-    def on_buttonBox_accepted(self):
-    
-        north = self.N_spinBox.value()
-        east = self.E_spinBox.value()
-        south = self.S_spinBox.value()
-        west = self.W_spinBox.value()
-        print("north: %s east %s south: %s west %s" % (str(north), str(east), str(south), str(west)))
-        self.accept()
-        
-    @pyqtSlot()
-    def on_buttonBox_rejected(self):
-
-        # TODO: not implemented yet
-        self.reject()
+    def add_coordinates_to_UI(self, coordinates):
+        # [0]=north, [1]south, [2]east, [3]west
+        north=coordinates[0]
+        east=coordinates[2]
+        south=coordinates[1]
+        west=coordinates[3]
+        self.N_spinBox.setValue(north)
+        self.E_spinBox.setValue(east)
+        self.S_spinBox.setValue(south)
+        self.W_spinBox.setValue(west)
+   
     
     def on_btn_search_tile_clicked(self):
         print("searching for tile...")
@@ -152,33 +147,24 @@ class Ui_search_Dialog(QDialog, FORM_CLASS):
         if tile_name=="":
             raise Exception("no tile name entered")
         elif tile_name:
-            print("tile selected" + tile_name)
+            print("tile selected " + tile_name)
             bounds = get_bounds(tile_name.lower())._asdict()
             coordinates = list(bounds.values())
         else:
             raise Exception("Tile unavailable")
 
-            
         return coordinates
 
-       
-    def add_coordinates_to_UI(self, coordinates):
-        #get_bounds outputs a dictionary coordinates = [north, south, east, west]
-        north=coordinates[0]
-        east=coordinates[2]
-        south=coordinates[1]
-        west=coordinates[3]
-        self.N_spinBox.setValue(north)
-        self.E_spinBox.setValue(east)
-        self.S_spinBox.setValue(south)
-        self.W_spinBox.setValue(west)
-    
-        
+
     def get_values(self):   
         n = self.N_spinBox.value()
         e = self.E_spinBox.value()
         s = self.S_spinBox.value()
         w = self.W_spinBox.value()
+        print(n)
+        print(e)
+        print(s)
+        print(w)
         return n,e,s,w
 
 
