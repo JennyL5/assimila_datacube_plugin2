@@ -52,7 +52,7 @@ class Ui_search_Dialog(QDialog, FORM_CLASS):
         self.label_9 = QtWidgets.QLabel(search_Dialog)
         self.label_9.setGeometry(QtCore.QRect(50, 40, 401, 101))
         self.label_9.setText("")
-        self.label_9.setPixmap(QtGui.QPixmap(":/plugins/assimila_datacube/assimila_namelogo.png"))
+        self.label_9.setPixmap(QtGui.QPixmap(":/plugins/assimila_datacube/img/assimila_namelogo.png"))
         self.label_9.setScaledContents(True)
         self.label_9.setObjectName("label_9")
         self.N_spinBox = QtWidgets.QDoubleSpinBox(search_Dialog)
@@ -63,7 +63,10 @@ class Ui_search_Dialog(QDialog, FORM_CLASS):
         self.N_spinBox.setObjectName("N_spinBox")
         self.label_5 = QtWidgets.QLabel(search_Dialog)
         self.label_5.setGeometry(QtCore.QRect(240, 220, 91, 16))
-        self.label_5.setObjectName("label_5")
+        self.label_5.setObjectName("label_5") 
+        self.label_8 = QtWidgets.QLabel(search_Dialog)
+        self.label_8.setGeometry(QtCore.QRect(340, 270, 91, 16))
+        self.label_8.setObjectName("label_8")
         self.W_spinBox = QtWidgets.QDoubleSpinBox(search_Dialog)
         self.W_spinBox.setGeometry(QtCore.QRect(140, 290, 81, 41))
         self.W_spinBox.setMinimum(-180.0)
@@ -116,23 +119,18 @@ class Ui_search_Dialog(QDialog, FORM_CLASS):
         search_Dialog.setWindowTitle(_translate("search_Dialog", "search_Dialog"))
         self.Description.setText(_translate("search_Dialog", "A QGIS plugin to visualise a datacube"))
         self.label_5.setText(_translate("search_Dialog", "North"))
+        self.label_8.setText(_translate("search_Dialog", "East"))
         self.label_7.setText(_translate("search_Dialog", "West"))
         self.label_6.setText(_translate("search_Dialog", "South"))
         self.btn_search_tile.setText(_translate("search_Dialog", "Search"))
     
-    def add_coordinates_to_UI(self, coordinates):
-        # [0]=north, [1]south, [2]east, [3]west
-        north=coordinates[0]
-        east=coordinates[2]
-        south=coordinates[1]
-        west=coordinates[3]
-        self.N_spinBox.setValue(north)
-        self.E_spinBox.setValue(east)
-        self.S_spinBox.setValue(south)
-        self.W_spinBox.setValue(west)
-   
-    
+ 
     def on_btn_search_tile_clicked(self):
+        """
+        When the searhc buttons is clicked, it will try 
+        find the tile and add the coordinates to the UI.
+        """
+
         print("searching for tile...")
         print(self.search_tile.displayText())
          
@@ -142,6 +140,10 @@ class Ui_search_Dialog(QDialog, FORM_CLASS):
    
  
     def find_tile(self):
+        """
+        Return a list of north, east, south, west bounds from the
+        regions.yaml file of the tile name inputed.
+        """
 
         tile_name = self.search_tile.displayText()
         if tile_name=="":
@@ -155,21 +157,39 @@ class Ui_search_Dialog(QDialog, FORM_CLASS):
 
         return coordinates
 
+    def add_coordinates_to_UI(self, coordinates):
+        """
+        This adds the north, east, south, west points to the widgets
+        on the user interface.
+        :param coordinates: A list with north, east, south, west bounds
+        """
+        # Extracting bounds from the coordinates list
+        # [0]=north, [1]south, [2]east, [3]west
+        north=coordinates[0]
+        east=coordinates[2]
+        south=coordinates[1]
+        west=coordinates[3]
 
-    def get_values(self):   
+        # Adds the north, east, south, west bounds into the display boxes
+        self.N_spinBox.setValue(north)
+        self.E_spinBox.setValue(east)
+        self.S_spinBox.setValue(south)
+        self.W_spinBox.setValue(west)
+   
+    
+    def get_values(self):
+        """
+        Returns the values in the display boxes
+        for the north, east, south, west bounds.
+        """   
         n = self.N_spinBox.value()
         e = self.E_spinBox.value()
         s = self.S_spinBox.value()
         w = self.W_spinBox.value()
-        print(n)
-        print(e)
-        print(s)
-        print(w)
         return n,e,s,w
 
 
 from qgsfilterlineedit import QgsFilterLineEdit
-
 
 
 if __name__ == "__main__":

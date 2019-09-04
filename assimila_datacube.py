@@ -27,9 +27,10 @@ from qgis.PyQt.QtWidgets import QAction, QFileDialog
 from qgis.core import *
 from qgis.core import QgsProject, Qgis, QgsPointXY, QgsGeometry, QgsPoint, QgsVectorLayer
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QMessageBox
+from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QColor
+from qgis.gui import QgsMapCanvas, QgsRubberBand
 from qgis.utils import plugins, reloadPlugin, loadPlugin, startPlugin, isPluginLoaded
-
 from qgis.PyQt.QtNetwork import QNetworkRequest, QNetworkReply,  QNetworkAccessManager
 
 # Initialize Qt resources from file resources.py
@@ -41,15 +42,14 @@ from os.path import expanduser
 import numpy as np
 import tempfile
 
-
 # Import DQTools to set up connection to database
 from .DQTools.DQTools import Search, Dataset 
 
+# Import Dialog windows
 from .nesw_dialog import Ui_NESW_Dialog
 from .canvas_dialog import Ui_canvas_Dialog
 from .search_dialog import Ui_search_Dialog
-from qgis.gui import QgsMapCanvas, QgsRubberBand
-from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class AssimilaDatacCube:
     """QGIS Plugin Implementation."""
@@ -185,7 +185,7 @@ class AssimilaDatacCube:
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
 
-        icon_path = ':/plugins/assimila_datacube/icon.png'
+        icon_path = ':/plugins/assimila_datacube2/img/icon.png'
         self.add_action(
             icon_path,
             text=self.tr(u'Visualise the datacube.'),
@@ -340,24 +340,12 @@ class AssimilaDatacCube:
         # Creates new layer and adds to current project
         self.iface.addRasterLayer(default_temp_path, "%s_%s_N%d_E%d_S%d_W%d_%s_%s" % (product, subproduct, north, east, south, west, start_datetime, end_datetime))
 
-    def add_coordinates_to_UI(self, coordinates): 
-        north=coordinates[0]
-        east=coordinates[1]
-        south=coordinates[2]
-        west=coordinates[3]
-        self.dlg.N_box.setText(str(north))
-        self.dlg.E_box.setText(str(east))
-        self.dlg.S_box.setText(str(south))
-        self.dlg.W_box.setText(str(west))
-        self.dlg.N_box.setDisabled(True)
-        self.dlg.E_box.setDisabled(True)
-        self.dlg.S_box.setDisabled(True)
-        self.dlg.W_box.setDisabled(True)
-        #self.show_canvas()
-        #self.update_map()
-        self.update_map( north, east, south, west)
-
     def on_nesw_radioButton_clicked(self):
+        """
+        When the nesw coordinates radio button is toggled it will open
+        up a dialog window for the user to manually enter the north, east
+        south, west bounds.
+        """
         print("nesw clicked")
         NESW_Dialog = QtWidgets.QDialog()
         ui = Ui_NESW_Dialog()
@@ -372,6 +360,11 @@ class AssimilaDatacCube:
             print("cancelled was clicked")
     
     def on_set_canvas_radioButton_clicked(self):
+        """
+        When the get canvas radio button is toggled it will open
+        up a dialog window for the user to click set canvas extent, 
+        and get the coordinates of the canvas. 
+        """
         print("set canvas clicked")
         canvas_Dialog = QtWidgets.QDialog()
         ui = Ui_canvas_Dialog()
@@ -386,6 +379,11 @@ class AssimilaDatacCube:
             print("cancelled was clicked")
 
     def on_search_tile_radioButton_clicked(self):
+        """
+        When the search tile radio button is toggled it will open
+        up a dialog window for the user to search tile, and get
+        the coordinates of the tile. 
+        """
         print("search tile clicked")
         search_Dialog = QtWidgets.QDialog()
         ui = Ui_search_Dialog()
@@ -399,10 +397,49 @@ class AssimilaDatacCube:
         else:
             print("cancelled was clicked")
 
+    def add_coordinates_to_UI(self, coordinates): 
+        """
+        This adds the north, east, south, west points to the widgets
+        on the user interface.
+        :param coordinates: A list with north, east, south, west bounds
+        :return:
+        """
+        # Extracting bounds from the coordinates list
+        north=coordinates[0]
+        east=coordinates[1]
+        south=coordinates[2]
+        west=coordinates[3]
+
+        # Adds the north, east, south, west bounds into the display boxes
+        self.dlg.N_box.setText(str(north))
+        self.dlg.E_box.setText(str(east))
+        self.dlg.S_box.setText(str(south))
+        self.dlg.W_box.setText(str(west))
+
+        # Disables the boxes so cannot be altered
+        self.dlg.N_box.setDisabled(True)
+        self.dlg.E_box.setDisabled(True)
+        self.dlg.S_box.setDisabled(True)
+        self.dlg.W_box.setDisabled(True)
+        
+        # Calls update map method
+        self.update_map(north, east, south, west)
+
     def update_map(self, north, east, south, west):
+        """
+        This updates the map to add the new bounding box
+        specified by the north, east, south, west parameters.
+        :param north: The name of the north point
+        :param east: The name of the east point
+        :param south: The name of the south point
+        :param west: The name of the west point
+        :return:
+        """
+        
         from qgis.utils import iface
         from qgis.PyQt.QtCore import Qt
 
+        # Using the coordinate referencing system for mapping
         crsDest = QgsCoordinateReferenceSystem(4326)  # WGS84 source
         crsSrc = self.iface.mapCanvas().mapSettings().destinationCrs() # target
         xform = QgsCoordinateTransform()
@@ -425,20 +462,24 @@ class AssimilaDatacCube:
         canvas.setLayers(canvas_layer_list)
         canvas.zoomToFullExtent()
         
+        # Scaling the points
         north = north*100000
         east = east*100000
         south = south*100000
         west = west*100000
 
+        # Creating the rubber band rectangle
         r = QgsRubberBand(canvas, True)  # True = a polygon
         #points = [[QgsPointXY(-8990718, -282408), QgsPointXY(-6467587, -353010), QgsPointXY(-6369620, -1023845),QgsPointXY(-8624471, -1915078)]]
         #points = [[QgsPointXY(p1), QgsPointXY(p2), QgsPointXY(p3), QgsPointXY(p4)]]
+        # Sepcifying the points of rectangle
         points = [[QgsPointXY(west, north), QgsPointXY(east, north), QgsPointXY(east, south), QgsPointXY(west, south)]]
         #points = [[QgsPointXY(-19, 38), QgsPointXY(53, 38), QgsPointXY(53, -36),QgsPointXY(-19, -36)]] #africa
         r.setToGeometry(QgsGeometry.fromPolygonXY(points), None)
         r.setColor(QColor(255, 0, 0, 20)) #R,G,B,Transparency
         r.setWidth(1)
-        print(points)
+        canvas.zoomWithCenter(north-south,east-west,True)
+        canvas.zoomScale(10000000000000)
         canvas.show()
 
 
@@ -450,7 +491,12 @@ class AssimilaDatacCube:
         """
             
         # Reloading the plugin
+        reloadPlugin('AssimilaDatacCube')
         reloadPlugin('assimila_datacube')
+        reloadPlugin('nesw_dialog')
+        reloadPlugin('canvas_dialog')
+        reloadPlugin('searchs_dialog')
+
 
         # Create the dialog with elements (after translation) and keep reference
         # Only create GUI ONCE in callback, so that it will only load when the plugin is started
@@ -458,10 +504,11 @@ class AssimilaDatacCube:
             self.first_start = False
             self.dlg = AssimilaDatacCubeDialog(self.iface)
 
+        # Creates map canvas within the widget on the UI
         map_canvas = QgsMapCanvas(self.dlg.QgsMapCanvas_wid)
         map_canvas.setMinimumSize(460, 250)
         layers = QgsProject.instance().mapLayers()
-        map_canvas_layer_list = [l for l in layers.values()]
+        map_canvas_layer_list = [l for l in layers.values()] # layer = OSM
         map_canvas.setLayers(map_canvas_layer_list)
         print(map_canvas.layers())
         map_canvas.setExtent(self.iface.mapCanvas().extent())

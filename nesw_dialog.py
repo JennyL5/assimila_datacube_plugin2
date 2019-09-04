@@ -51,6 +51,9 @@ class Ui_NESW_Dialog(QDialog, FORM_CLASS):
         self.label_5 = QtWidgets.QLabel(NESW_Dialog)
         self.label_5.setGeometry(QtCore.QRect(230, 180, 91, 16))
         self.label_5.setObjectName("label_5")
+        self.label_8 = QtWidgets.QLabel(NESW_Dialog)
+        self.label_8.setGeometry(QtCore.QRect(330, 230, 91, 16))
+        self.label_8.setObjectName("label_8")
         self.label_6 = QtWidgets.QLabel(NESW_Dialog)
         self.label_6.setGeometry(QtCore.QRect(240, 280, 91, 16))
         self.label_6.setObjectName("label_6")
@@ -65,7 +68,7 @@ class Ui_NESW_Dialog(QDialog, FORM_CLASS):
         self.label_9 = QtWidgets.QLabel(NESW_Dialog)
         self.label_9.setGeometry(QtCore.QRect(60, 30, 401, 101))
         self.label_9.setText("")
-        self.label_9.setPixmap(QtGui.QPixmap(":/plugins/assimila_datacube/assimila_namelogo.png"))
+        self.label_9.setPixmap(QtGui.QPixmap(":/plugins/assimila_datacube/img/assimila_namelogo.png"))
         self.label_9.setScaledContents(True)
         self.label_9.setObjectName("label_9")
         self.Description = QtWidgets.QLabel(NESW_Dialog)
@@ -89,13 +92,17 @@ class Ui_NESW_Dialog(QDialog, FORM_CLASS):
         _translate = QtCore.QCoreApplication.translate
         NESW_Dialog.setWindowTitle(_translate("NESW_Dialog", "Dialog"))
         self.label_5.setText(_translate("NESW_Dialog", "North"))
+        self.label_8.setText(_translate("NESW_Dialog", "East"))
         self.label_6.setText(_translate("NESW_Dialog", "South"))
         self.label_7.setText(_translate("NESW_Dialog", "West"))
         self.Description.setText(_translate("NESW_Dialog", "A QGIS plugin to visualise a datacube"))
     
     
     def get_values(self):   
-
+        """
+        Returns the values in the display boxes
+        for the north, east, south, west bounds.
+        """
         n = self.N_spinBox.value()
         e = self.E_spinBox.value()
         s = self.S_spinBox.value()

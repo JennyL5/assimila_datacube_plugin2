@@ -46,7 +46,7 @@
     <string/>
    </property>
    <property name="pixmap">
-    <pixmap resource="resources.qrc">:/plugins/assimila_datacube/assimila_namelogo.png</pixmap>
+    <pixmap resource="resources.qrc">:/plugins/assimila_datacube2/img/assimila_namelogo.png</pixmap>
    </property>
    <property name="scaledContents">
     <bool>true</bool>

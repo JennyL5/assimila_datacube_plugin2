@@ -36,7 +36,7 @@ class Ui_canvas_Dialog(QDialog, FORM_CLASS):
         self.label_9 = QtWidgets.QLabel(canvas_Dialog)
         self.label_9.setGeometry(QtCore.QRect(60, 40, 401, 101))
         self.label_9.setText("")
-        self.label_9.setPixmap(QtGui.QPixmap(":/plugins/assimila_datacube/assimila_namelogo.png"))
+        self.label_9.setPixmap(QtGui.QPixmap(":/plugins/assimila_datacube/img/assimila_namelogo.png"))
         self.label_9.setScaledContents(True)
         self.label_9.setObjectName("label_9")
         self.btn_extent = QtWidgets.QPushButton(canvas_Dialog)
@@ -51,6 +51,9 @@ class Ui_canvas_Dialog(QDialog, FORM_CLASS):
         self.label_5 = QtWidgets.QLabel(canvas_Dialog)
         self.label_5.setGeometry(QtCore.QRect(150, 190, 91, 16))
         self.label_5.setObjectName("label_5")
+        self.label_8 = QtWidgets.QLabel(canvas_Dialog)
+        self.label_8.setGeometry(QtCore.QRect(250, 240, 91, 16))
+        self.label_8.setObjectName("label_8")
         self.W_spinBox = QtWidgets.QDoubleSpinBox(canvas_Dialog)
         self.W_spinBox.setGeometry(QtCore.QRect(50, 260, 81, 41))
         self.W_spinBox.setMinimum(-180.0)
@@ -96,12 +99,15 @@ class Ui_canvas_Dialog(QDialog, FORM_CLASS):
         self.Description.setText(_translate("canvas_Dialog", "A QGIS plugin to visualise a datacube"))
         self.btn_extent.setText(_translate("canvas_Dialog", "Set canvas extent"))
         self.label_5.setText(_translate("canvas_Dialog", "North"))
+        self.label_8.setText(_translate("canvas_Dialog", "East"))
         self.label_7.setText(_translate("canvas_Dialog", "West"))
         self.label_6.setText(_translate("canvas_Dialog", "South"))
 
-
-    #@pyqtSlot()
     def on_btn_extent(self, iface):
+        """
+        This will get the coordinates of the canvas extent, and then
+        set the values to their widgets on the UI.
+        """
         # Gets the coordinates of the extent
         crsDest = QgsCoordinateReferenceSystem(4326)  # WGS84
         crsSrc =self.iface.mapCanvas().mapSettings().destinationCrs()
@@ -119,6 +125,10 @@ class Ui_canvas_Dialog(QDialog, FORM_CLASS):
     
         
     def get_values(self):   
+        """
+        Returns the values in the display boxes
+        for the north, east, south, west bounds.
+        """
         n = self.N_spinBox.value()
         e = self.E_spinBox.value()
         s = self.S_spinBox.value()
