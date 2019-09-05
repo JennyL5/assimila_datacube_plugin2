@@ -492,11 +492,6 @@ class AssimilaDatacCube:
             
         # Reloading the plugin
         reloadPlugin('AssimilaDatacCube')
-        reloadPlugin('assimila_datacube')
-        reloadPlugin('nesw_dialog')
-        reloadPlugin('canvas_dialog')
-        reloadPlugin('searchs_dialog')
-
 
         # Create the dialog with elements (after translation) and keep reference
         # Only create GUI ONCE in callback, so that it will only load when the plugin is started
@@ -506,13 +501,12 @@ class AssimilaDatacCube:
 
         # Creates map canvas within the widget on the UI
         map_canvas = QgsMapCanvas(self.dlg.QgsMapCanvas_wid)
-        map_canvas.setMinimumSize(460, 250)
+        map_canvas.setMinimumSize(450, 250)
         layers = QgsProject.instance().mapLayers()
         map_canvas_layer_list = [l for l in layers.values()] # layer = OSM
         map_canvas.setLayers(map_canvas_layer_list)
-        print(map_canvas.layers())
-        map_canvas.setExtent(self.iface.mapCanvas().extent())
-        #map_canvas.setExtent(map_canvas_layer_list[1].extent())
+        #map_canvas.zoomToFullExtent()
+        map_canvas.setExtent(map_canvas_layer_list[0].extent())
         #map_canvas.zoomToFullExtent()
         map_canvas.show()
 
