@@ -37,7 +37,7 @@
     <rect>
      <x>90</x>
      <y>170</y>
-     <width>55</width>
+     <width>161</width>
      <height>16</height>
     </rect>
    </property>
@@ -50,7 +50,7 @@
     <rect>
      <x>370</x>
      <y>170</y>
-     <width>91</width>
+     <width>181</width>
      <height>16</height>
     </rect>
    </property>
@@ -76,7 +76,7 @@
     <rect>
      <x>50</x>
      <y>740</y>
-     <width>121</width>
+     <width>221</width>
      <height>16</height>
     </rect>
    </property>
@@ -170,7 +170,7 @@
     <rect>
      <x>350</x>
      <y>740</y>
-     <width>121</width>
+     <width>221</width>
      <height>16</height>
     </rect>
    </property>
@@ -329,7 +329,7 @@
      <rect>
       <x>10</x>
       <y>40</y>
-      <width>171</width>
+      <width>241</width>
       <height>20</height>
      </rect>
     </property>
@@ -342,7 +342,7 @@
      <rect>
       <x>250</x>
       <y>40</y>
-      <width>141</width>
+      <width>181</width>
       <height>20</height>
      </rect>
     </property>
@@ -355,7 +355,7 @@
      <rect>
       <x>440</x>
       <y>40</y>
-      <width>95</width>
+      <width>141</width>
       <height>20</height>
      </rect>
     </property>
@@ -379,9 +379,9 @@
    <widget class="QRadioButton" name="single_radioButton">
     <property name="geometry">
      <rect>
-      <x>80</x>
+      <x>60</x>
       <y>30</y>
-      <width>95</width>
+      <width>221</width>
       <height>20</height>
      </rect>
     </property>
@@ -392,9 +392,9 @@
    <widget class="QRadioButton" name="multi_radioButton">
     <property name="geometry">
      <rect>
-      <x>290</x>
+      <x>280</x>
       <y>30</y>
-      <width>201</width>
+      <width>301</width>
       <height>21</height>
      </rect>
     </property>
@@ -410,7 +410,7 @@
      <rect>
       <x>20</x>
       <y>70</y>
-      <width>91</width>
+      <width>231</width>
       <height>16</height>
      </rect>
     </property>
@@ -472,7 +472,7 @@
      <rect>
       <x>320</x>
       <y>70</y>
-      <width>91</width>
+      <width>231</width>
       <height>16</height>
      </rect>
     </property>

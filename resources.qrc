@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/plugins/assimila_datacube2" >
+    <qresource prefix="/plugins/assimila_datacube2/" >
         <file>img/icon.png</file>
         <file>img/assimila_namelogo.png</file>
     </qresource>

@@ -506,7 +506,7 @@ class AssimilaDatacCube:
 
         # Creates map canvas within the widget on the UI
         map_canvas = QgsMapCanvas(self.dlg.QgsMapCanvas_wid)
-        map_canvas.setMinimumSize(500, 250)
+        map_canvas.setMinimumSize(460, 250)
         layers = QgsProject.instance().mapLayers()
         map_canvas_layer_list = [l for l in layers.values()] # layer = OSM
         map_canvas.setLayers(map_canvas_layer_list)

@@ -30,7 +30,7 @@ from qgis.PyQt.QtCore import pyqtSlot,  Qt,  QUrl,  QFileInfo
 from qgis.PyQt.QtGui import QIntValidator
 from qgis.PyQt.QtWidgets import *
 from qgis.PyQt import QtWidgets
-from qgis.core import (QgsProcessingParameterString,)
+from qgis.core import QgsProcessingParameterString
 from qgis.PyQt.QtNetwork import QNetworkRequest, QNetworkReply,  QNetworkAccessManager
 from qgis.core import *
 from qgis.gui import QgsMapCanvas
@@ -39,7 +39,6 @@ from qgis.utils import iface
 from .nesw_dialog import Ui_NESW_Dialog
 from .canvas_dialog import Ui_canvas_Dialog
 from .search_dialog import Ui_search_Dialog
-
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(

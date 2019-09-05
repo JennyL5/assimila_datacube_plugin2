@@ -6,28 +6,20 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-
-from qgis.core import *
-from qgis.PyQt import uic
-from qgis.PyQt import QtNetwork
-from qgis.PyQt.QtCore import pyqtSlot,  Qt,  QUrl,  QFileInfo
-from qgis.PyQt.QtGui import QIntValidator
-from qgis.PyQt.QtWidgets import *
-
 from PyQt5 import QtCore, QtGui, QtWidgets
-from qgis.PyQt.QtCore import pyqtSlot
-import math,  os,  tempfile
+from qgis.PyQt import uic
+import os
+
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'nesw_dialog.ui'))
 
-class Ui_NESW_Dialog(QDialog, FORM_CLASS):
-    
+class Ui_NESW_Dialog(object):
     def setupUi(self, NESW_Dialog):
         NESW_Dialog.setObjectName("NESW_Dialog")
-        NESW_Dialog.resize(546, 492)
+        NESW_Dialog.resize(505, 450)
         self.buttonBox = QtWidgets.QDialogButtonBox(NESW_Dialog)
-        self.buttonBox.setGeometry(QtCore.QRect(160, 420, 341, 32))
+        self.buttonBox.setGeometry(QtCore.QRect(130, 390, 341, 32))
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
         self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName("buttonBox")
@@ -55,7 +47,7 @@ class Ui_NESW_Dialog(QDialog, FORM_CLASS):
         self.label_8.setGeometry(QtCore.QRect(330, 230, 91, 16))
         self.label_8.setObjectName("label_8")
         self.label_6 = QtWidgets.QLabel(NESW_Dialog)
-        self.label_6.setGeometry(QtCore.QRect(240, 280, 91, 16))
+        self.label_6.setGeometry(QtCore.QRect(230, 280, 91, 16))
         self.label_6.setObjectName("label_6")
         self.label_7 = QtWidgets.QLabel(NESW_Dialog)
         self.label_7.setGeometry(QtCore.QRect(130, 230, 91, 16))
@@ -66,26 +58,26 @@ class Ui_NESW_Dialog(QDialog, FORM_CLASS):
         self.S_spinBox.setMaximum(90.0)
         self.S_spinBox.setObjectName("S_spinBox")
         self.label_9 = QtWidgets.QLabel(NESW_Dialog)
-        self.label_9.setGeometry(QtCore.QRect(60, 30, 401, 101))
+        self.label_9.setGeometry(QtCore.QRect(40, 30, 401, 101))
         self.label_9.setText("")
-        self.label_9.setPixmap(QtGui.QPixmap(":/plugins/assimila_datacube/img/assimila_namelogo.png"))
+        self.label_9.setPixmap(QtGui.QPixmap(":/plugins/assimila_datacube2/img/assimila_namelogo.png"))
         self.label_9.setScaledContents(True)
         self.label_9.setObjectName("label_9")
         self.Description = QtWidgets.QLabel(NESW_Dialog)
-        self.Description.setGeometry(QtCore.QRect(170, 110, 291, 41))
+        self.Description.setGeometry(QtCore.QRect(150, 110, 291, 41))
         font = QtGui.QFont()
         font.setPointSize(9)
         font.setBold(True)
         font.setWeight(75)
         self.Description.setFont(font)
         self.Description.setObjectName("Description")
+        self.label_81 = QtWidgets.QLabel(NESW_Dialog)
+        self.label_81.setGeometry(QtCore.QRect(330, 230, 91, 16))
+        self.label_81.setObjectName("label_81")
 
         self.retranslateUi(NESW_Dialog)
         self.buttonBox.accepted.connect(NESW_Dialog.accept)
         self.buttonBox.rejected.connect(NESW_Dialog.reject)
-        #self.buttonBox.accepted.connect(self.on_buttonBox_accepted)
-        #self.buttonBox.rejected.connect(self.on_buttonBox_rejected)
-
         QtCore.QMetaObject.connectSlotsByName(NESW_Dialog)
 
     def retranslateUi(self, NESW_Dialog):
@@ -96,8 +88,8 @@ class Ui_NESW_Dialog(QDialog, FORM_CLASS):
         self.label_6.setText(_translate("NESW_Dialog", "South"))
         self.label_7.setText(_translate("NESW_Dialog", "West"))
         self.Description.setText(_translate("NESW_Dialog", "A QGIS plugin to visualise a datacube"))
-    
-    
+        self.label_81.setText(_translate("NESW_Dialog", "East"))
+
     def get_values(self):   
         """
         Returns the values in the display boxes
@@ -108,13 +100,3 @@ class Ui_NESW_Dialog(QDialog, FORM_CLASS):
         s = self.S_spinBox.value()
         w = self.W_spinBox.value()
         return n,e,s,w
-    
-    if __name__ == "__main__":
-        import sys
-        app = QtWidgets.QApplication(sys.argv)
-        NESW_Dialog = QtWidgets.QDialog()
-        ui = Ui_NESW_Dialog()
-        ui.setupUi(NESW_Dialog)
-        #NESW_Dialog.show()
-        #Dialog_exec_()
-        sys.exit(app.exec_())
