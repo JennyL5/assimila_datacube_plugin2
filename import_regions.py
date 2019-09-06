@@ -27,7 +27,8 @@ for j in reg_iso:
         #print(dict1)
         
         # Export to .yaml file
-        with open('DQTools/DQTools/regions/regions.yaml', 'w') as yaml_file:
+        #with open('DQTools/DQTools/regions/regions.yaml', 'w') as yaml_file:
+        with open('bounds.yaml', 'w') as yaml_file:
             yaml.dump(dict1, yaml_file, default_flow_style=False)
         
     except Exception:
