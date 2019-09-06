@@ -35,6 +35,3 @@ for j in reg_iso:
         pass
 
 print(skipped) #'ANT' cannot find name error
-
-
-
