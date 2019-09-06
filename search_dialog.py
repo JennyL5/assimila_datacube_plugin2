@@ -7,11 +7,12 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import *
 from qgis.PyQt import uic
 import os
 
 from .DQTools.DQTools import Search, Dataset 
-from .DQTools.DQTools.regions import get_bounds
+from .DQTools.DQTools.regions import get_bounds, get_country_names
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'search_dialog.ui'))
@@ -70,10 +71,13 @@ class Ui_search_Dialog(object):
         self.E_spinBox.setMaximum(180.0)
         self.E_spinBox.setProperty("value", 10.0)
         self.E_spinBox.setObjectName("E_spinBox")
+        country_names = get_country_names()
+        completer = QCompleter(country_names)
         self.search_tile = QgsFilterLineEdit(Dialog)
         self.search_tile.setGeometry(QtCore.QRect(140, 160, 221, 21))
         self.search_tile.setProperty("qgisRelation", "")
         self.search_tile.setObjectName("search_tile")
+        self.search_tile.setCompleter(completer)
         self.btn_search_tile = QtWidgets.QPushButton(Dialog)
         self.btn_search_tile.setGeometry(QtCore.QRect(370, 160, 51, 31))
         self.btn_search_tile.setObjectName("btn_search_tile")
@@ -83,7 +87,7 @@ class Ui_search_Dialog(object):
         self.buttonBox.accepted.connect(Dialog.accept)
         self.buttonBox.rejected.connect(Dialog.reject)
         self.btn_search_tile.clicked.connect(self.on_btn_search_tile_clicked)
-
+ 
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
