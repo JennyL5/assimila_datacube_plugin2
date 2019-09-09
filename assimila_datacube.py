@@ -482,6 +482,59 @@ class AssimilaDatacCube:
         canvas.zoomScale(10000000000000)
         canvas.show()
 
+    def use_shapefile_layer(self):
+            map_canvas = QgsMapCanvas
+            layer = self.iface.activeLayer()
+            layer.selectAll() # Selects all vector layer
+            # Assumes that the active layer is points.shp file from the QGIS test suite
+            # (Class (string) and Heading (number) are attributes in points.shp)
+            layer = self.iface.activeLayer()
+            #self.iface.mapCanvas().setSelectionColor( QColor("red") )
+            coordinates_list = []
+            selected_fid = []
+            # Get the first feature id from the layer
+            for feature in layer.getFeatures():
+                selected_fid.append(feature.id())
+                # Get the coordinates
+                for pos, ch in enumerate(feature.geometry().vertices()): #4
+                    coordinates_list.append(feature.geometry().vertexAt(pos))
+            #print(coordinates_list[0].x())
+            north, east, south, west = self.points_to_cardinal(coordinates_list)
+            #print(feature.geometry().boundingBox)
+
+            self.dlg.N_box.setText(str(north))
+            self.dlg.E_box.setText(str(east))
+            self.dlg.S_box.setText(str(south))
+            self.dlg.W_box.setText(str(west))
+
+            self.dlg.nesw_radioButton.setDisabled(True)
+            self.dlg.set_canvas_radioButton.setDisabled(True)
+            self.dlg.search_tile_radioButton.setDisabled(True)
+
+    def points_to_cardinal(self, coordinates_list):
+        # Convert rect points to nesw 
+        x_list = []
+        y_list = []
+
+        for pos, ch in enumerate(coordinates_list):
+            x_list.append(coordinates_list[pos].x())
+            y_list.append(coordinates_list[pos].y())
+            
+        north = round(max(x_list), 2)
+        #max_x = np.where(x_list == np.amax(x_list))
+        south = round(min(x_list),2)
+        print(x_list)
+        east = round(max(y_list), 2)
+        west = round(min(y_list), 2)
+        print(y_list)
+
+        print(north)
+        print(east)
+        print(south)
+        print(west)
+
+        return north, east, south, west
+
 
     def run(self):
         """
@@ -499,16 +552,26 @@ class AssimilaDatacCube:
             self.first_start = False
             self.dlg = AssimilaDatacCubeDialog(self.iface)
 
+        
         # Creates map canvas within the widget on the UI
         map_canvas = QgsMapCanvas(self.dlg.QgsMapCanvas_wid)
         map_canvas.setMinimumSize(450, 250)
         layers = QgsProject.instance().mapLayers()
-        map_canvas_layer_list = [l for l in layers.values()] # layer = OSM
+        map_canvas_layer_list = [l for l in layers.values()] # layer[0] = OSM
+        #print(map_canvas_layer_list[1].getFeatures)
         map_canvas.setLayers(map_canvas_layer_list)
         #map_canvas.zoomToFullExtent()
-        map_canvas.setExtent(map_canvas_layer_list[0].extent())
+        map_canvas.setExtent(map_canvas_layer_list[0].extent()) # map layer extent
         #map_canvas.zoomToFullExtent()
         map_canvas.show()
+        
+        try: 
+            self.use_shapefile_layer()
+        except Exception:
+            pass
+
+        
+        
 
         # Clears the values from previous run
         self.dlg.lineEdit.clear() #keyfile

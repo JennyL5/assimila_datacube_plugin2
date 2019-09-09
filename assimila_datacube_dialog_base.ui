@@ -55,7 +55,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Sub Product</string>
+    <string>Subproduct</string>
    </property>
   </widget>
   <widget class="QToolButton" name="btn_browse_keyfile">
