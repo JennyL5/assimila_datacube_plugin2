@@ -483,36 +483,51 @@ class AssimilaDatacCube:
         canvas.show()
 
     def use_shapefile_layer(self):
-            map_canvas = QgsMapCanvas
-            layer = self.iface.activeLayer()
-            layer.selectAll() # Selects all vector layer
-            # Assumes that the active layer is points.shp file from the QGIS test suite
-            # (Class (string) and Heading (number) are attributes in points.shp)
-            layer = self.iface.activeLayer()
-            #self.iface.mapCanvas().setSelectionColor( QColor("red") )
-            coordinates_list = []
-            selected_fid = []
-            # Get the first feature id from the layer
-            for feature in layer.getFeatures():
-                selected_fid.append(feature.id())
-                # Get the coordinates
-                for pos, ch in enumerate(feature.geometry().vertices()): #4
-                    coordinates_list.append(feature.geometry().vertexAt(pos))
-            #print(coordinates_list[0].x())
-            north, east, south, west = self.points_to_cardinal(coordinates_list)
-            #print(feature.geometry().boundingBox)
+        """
+        This uses the polygon drawn using 'digitalizing tools' accessed via the shapefile
+        to get the coordinates and calculate the north, east, south, west bounds. This 
+        will then be passed to the main UI.
+        :result:
+        """
+        
+        map_canvas = QgsMapCanvas
+        layer = self.iface.activeLayer()
+        layer.selectAll() # Selects all vector layer
+        # Assumes that the active layer is points.shp file from the QGIS test suite
+        # (Class (string) and Heading (number) are attributes in points.shp)
+        layer = self.iface.activeLayer()
+        #self.iface.mapCanvas().setSelectionColor( QColor("red") )
+        coordinates_list = []
+        selected_fid = []
+        # Get the first feature id from the layer
+        for feature in layer.getFeatures():
+            selected_fid.append(feature.id())
+            # Get the coordinates
+            for pos, ch in enumerate(feature.geometry().vertices()): #4
+                coordinates_list.append(feature.geometry().vertexAt(pos))
+        #print(coordinates_list[0].x())
+        north, east, south, west = self.points_to_cardinal(coordinates_list)
+        #print(feature.geometry().boundingBox)
 
-            self.dlg.N_box.setText(str(north))
-            self.dlg.E_box.setText(str(east))
-            self.dlg.S_box.setText(str(south))
-            self.dlg.W_box.setText(str(west))
+        # Displayed the values in the display boxes
+        self.dlg.N_box.setText(str(north))
+        self.dlg.E_box.setText(str(east))
+        self.dlg.S_box.setText(str(south))
+        self.dlg.W_box.setText(str(west))
 
-            self.dlg.nesw_radioButton.setDisabled(True)
-            self.dlg.set_canvas_radioButton.setDisabled(True)
-            self.dlg.search_tile_radioButton.setDisabled(True)
+        # Disables other options of selcting the bounds
+        self.dlg.nesw_radioButton.setDisabled(True)
+        self.dlg.set_canvas_radioButton.setDisabled(True)
+        self.dlg.search_tile_radioButton.setDisabled(True)
 
     def points_to_cardinal(self, coordinates_list):
         # Convert rect points to nesw 
+        """
+        This gets the coordinates, and calculates the 
+        north, east, south, west bounds of the polygon
+        :param coordinates_list: The list of x,y coordinates of the polygon
+        :result:
+        """
         x_list = []
         y_list = []
 
@@ -533,8 +548,7 @@ class AssimilaDatacCube:
         print(south)
         print(west)
 
-        return north, east, south, west
-
+        return north, east, south, west        
 
     def run(self):
         """
@@ -565,13 +579,13 @@ class AssimilaDatacCube:
         #map_canvas.zoomToFullExtent()
         map_canvas.show()
         
+        # If there exists a shapefile on the canvas then will get
+        # coordinates from that plolygon
         try: 
             self.use_shapefile_layer()
         except Exception:
             pass
 
-        
-        
 
         # Clears the values from previous run
         self.dlg.lineEdit.clear() #keyfile
