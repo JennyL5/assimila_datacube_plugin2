@@ -424,6 +424,19 @@ class AssimilaDatacCube:
         
         # Calls update map method
         self.update_map(north, east, south, west)
+    
+    def display_map(self):
+        # Creates map canvas within the widget on the UI
+        map_canvas = QgsMapCanvas(self.dlg.QgsMapCanvas_wid)
+        map_canvas.setMinimumSize(450, 250)
+        layers = QgsProject.instance().mapLayers()
+        map_canvas_layer_list = [l for l in layers.values()] # layer[0] = OSM
+        #print(map_canvas_layer_list[1].getFeatures)
+        map_canvas.setLayers(map_canvas_layer_list)
+        #map_canvas.zoomToFullExtent()
+        map_canvas.setExtent(map_canvas_layer_list[0].extent()) # map layer extent
+        #map_canvas.zoomToFullExtent()
+        map_canvas.show()
 
     def update_map(self, north, east, south, west):
         """
@@ -550,6 +563,7 @@ class AssimilaDatacCube:
 
         return north, east, south, west        
 
+
     def run(self):
         """
         This prepares the user interface of the plugin and the performs the events 
@@ -567,25 +581,14 @@ class AssimilaDatacCube:
             self.dlg = AssimilaDatacCubeDialog(self.iface)
 
         
-        # Creates map canvas within the widget on the UI
-        map_canvas = QgsMapCanvas(self.dlg.QgsMapCanvas_wid)
-        map_canvas.setMinimumSize(450, 250)
-        layers = QgsProject.instance().mapLayers()
-        map_canvas_layer_list = [l for l in layers.values()] # layer[0] = OSM
-        #print(map_canvas_layer_list[1].getFeatures)
-        map_canvas.setLayers(map_canvas_layer_list)
-        #map_canvas.zoomToFullExtent()
-        map_canvas.setExtent(map_canvas_layer_list[0].extent()) # map layer extent
-        #map_canvas.zoomToFullExtent()
-        map_canvas.show()
+        # Displays map on widget canvas
+        self.display_map()
         
-        # If there exists a shapefile on the canvas then will get
-        # coordinates from that plolygon
+        # If there exists a shapefile on the canvas then will get coordinates from that plolygon
         try: 
             self.use_shapefile_layer()
         except Exception:
             pass
-
 
         # Clears the values from previous run
         self.dlg.lineEdit.clear() #keyfile
