@@ -453,17 +453,19 @@ class AssimilaDatacCube:
         from qgis.PyQt.QtCore import Qt
 
         # Using the coordinate referencing system for mapping
-        crsDest = QgsCoordinateReferenceSystem(4326)  # WGS84 source
+        crsDest = QgsCoordinateReferenceSystem(100000)  # WGS84 source
         crsSrc = self.iface.mapCanvas().mapSettings().destinationCrs() # target
         xform = QgsCoordinateTransform()
         xform.setSourceCrs(crsSrc)
         xform.setDestinationCrs(crsDest)
         print("north: %s, east: %s, south: %s, west: %s " % (north, east, south, west))
 
-        #p1 = xform.transform(QgsPointXY(west*10000000, north*10000000))
-        #p2 = xform.transform(QgsPointXY(east*10000000, north*10000000))
-        #p3 = xform.transform(QgsPointXY(east*10000000, south*10000000))
-        #p4 = xform.transform(QgsPointXY(west*10000000, south*10000000))
+        #xform = QgsCoordinateTransform(crsSrc, crsDest)
+        #transform = QgsCoordinateTransform(crsSrc, 4326)
+        #north = xform.transform(QgsPoint(north))
+        #east = xform.transform(east)
+        #south = xform.transfor(south)
+        #west = xform.transform(west)
 
         #canvas = iface.mapCanvas() # set it to canvas
         #canvas.refresh()
@@ -548,12 +550,12 @@ class AssimilaDatacCube:
             x_list.append(coordinates_list[pos].x())
             y_list.append(coordinates_list[pos].y())
             
-        north = round(max(x_list), 2)
-        #max_x = np.where(x_list == np.amax(x_list))
-        south = round(min(x_list),2)
+        north = round(max(y_list), 2)
+        south = round(min(y_list),2)
         print(x_list)
-        east = round(max(y_list), 2)
-        west = round(min(y_list), 2)
+        #max_x = np.where(x_list == np.amax(x_list))
+        east = round(max(x_list), 2)
+        west = round(min(x_list), 2)
         print(y_list)
 
         print(north)
