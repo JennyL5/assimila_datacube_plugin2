@@ -315,9 +315,9 @@
   <widget class="QGroupBox" name="bounds_groupBox">
    <property name="geometry">
     <rect>
-     <x>30</x>
+     <x>20</x>
      <y>220</y>
-     <width>551</width>
+     <width>561</width>
      <height>81</height>
     </rect>
    </property>
@@ -334,26 +334,26 @@
      </rect>
     </property>
     <property name="text">
-     <string>N, E, S, W coordinates</string>
+     <string>N, E, S, W bounds</string>
     </property>
    </widget>
    <widget class="QRadioButton" name="set_canvas_radioButton">
     <property name="geometry">
      <rect>
-      <x>220</x>
+      <x>160</x>
       <y>40</y>
       <width>181</width>
       <height>20</height>
      </rect>
     </property>
     <property name="text">
-     <string>Set Canvas Extent</string>
+     <string>Canvas Extent</string>
     </property>
    </widget>
    <widget class="QRadioButton" name="search_tile_radioButton">
     <property name="geometry">
      <rect>
-      <x>410</x>
+      <x>290</x>
       <y>40</y>
       <width>141</width>
       <height>20</height>
@@ -361,6 +361,19 @@
     </property>
     <property name="text">
      <string>Search tile</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="search_tile_radioButton_2">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>40</y>
+      <width>141</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Import raster image</string>
     </property>
    </widget>
   </widget>
