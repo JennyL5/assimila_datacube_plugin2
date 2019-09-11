@@ -428,16 +428,16 @@ class AssimilaDatacCube:
     def display_map(self):
         # Creates map canvas within the widget on the UI
         map_canvas = QgsMapCanvas(self.dlg.QgsMapCanvas_wid)
-        map_canvas.setMinimumSize(450, 250)
-        layers = QgsProject.instance().mapLayers()
-        map_canvas_layer_list = [l for l in layers.values()] # layer[0] = OSM
+        map_canvas.setMinimumSize(450, 250)        
+        raster = self.iface.addRasterLayer("url='https://server.arcgisonline.com/arcgis/rest/services/Canvas/World_Light_Gray_Base/MapServer' layer='0'", "tmp", "arcgismapserver")
+        #layers = QgsProject.instance().mapLayers()
+        map_canvas_layer_list = [raster, raster] 
         #print(map_canvas_layer_list[1].getFeatures)
         map_canvas.setLayers(map_canvas_layer_list)
-        #map_canvas.zoomToFullExtent()
-        map_canvas.setExtent(map_canvas_layer_list[0].extent()) # map layer extent
-        #map_canvas.zoomToFullExtent()
+        map_canvas.setExtent(raster.extent()) # map layer extent
+        map_canvas.zoomToFullExtent()
         map_canvas.show()
-
+        
     def update_map(self, north, east, south, west):
         """
         This updates the map to add the new bounding box
@@ -448,54 +448,44 @@ class AssimilaDatacCube:
         :param west: The name of the west point
         :return:
         """
-        
+
         from qgis.utils import iface
         from qgis.PyQt.QtCore import Qt
 
-        # Using the coordinate referencing system for mapping
-        crsDest = QgsCoordinateReferenceSystem(100000)  # WGS84 source
-        crsSrc = self.iface.mapCanvas().mapSettings().destinationCrs() # target
+        canvas = QgsMapCanvas(self.dlg.QgsMapCanvas_wid)
+        canvas.setMinimumSize(460, 250)
+        raster = self.iface.addRasterLayer("url='https://server.arcgisonline.com/arcgis/rest/services/Canvas/World_Light_Gray_Base/MapServer' layer='0'", "tmp", "arcgismapserver")
+        canvas_layer_list = [raster, raster] 
+        canvas.setLayers(canvas_layer_list)
+
+        crsDest = QgsCoordinateReferenceSystem(4326)  # destination
+        crsSrc = canvas.mapSettings().destinationCrs() # source
         xform = QgsCoordinateTransform()
         xform.setSourceCrs(crsSrc)
         xform.setDestinationCrs(crsDest)
         print("north: %s, east: %s, south: %s, west: %s " % (north, east, south, west))
-
-        #xform = QgsCoordinateTransform(crsSrc, crsDest)
-        #transform = QgsCoordinateTransform(crsSrc, 4326)
-        #north = xform.transform(QgsPoint(north))
-        #east = xform.transform(east)
-        #south = xform.transfor(south)
-        #west = xform.transform(west)
-
-        #canvas = iface.mapCanvas() # set it to canvas
-        #canvas.refresh()
-
-        canvas = QgsMapCanvas(self.dlg.QgsMapCanvas_wid)
-        canvas.setMinimumSize(460, 250)
-        layers = QgsProject.instance().mapLayers()
-        canvas_layer_list = [l for l in layers.values()]
-        canvas.setLayers(canvas_layer_list)
-        canvas.zoomToFullExtent()
+        canvas.setDestinationCrs(crsDest)
         
-        # Scaling the points
-        north = north*100000
-        east = east*100000
-        south = south*100000
-        west = west*100000
-
+        print("QGIS CRS ID:", crsSrc.srsid()) #0 
+        print("PostGIS SRID:", crsSrc.postgisSrid()) #0 
+        print("Description:", crsSrc.description()) # 
+        
+        print("QGIS CRS ID:", crsDest.srsid()) #3452
+        print("PostGIS SRID:", crsDest.postgisSrid()) #4326
+        print("Description:", crsDest.description()) # wgs 84
+        
         # Creating the rubber band rectangle
         r = QgsRubberBand(canvas, True)  # True = a polygon
-        #points = [[QgsPointXY(-8990718, -282408), QgsPointXY(-6467587, -353010), QgsPointXY(-6369620, -1023845),QgsPointXY(-8624471, -1915078)]]
-        #points = [[QgsPointXY(p1), QgsPointXY(p2), QgsPointXY(p3), QgsPointXY(p4)]]
         # Sepcifying the points of rectangle
         points = [[QgsPointXY(west, north), QgsPointXY(east, north), QgsPointXY(east, south), QgsPointXY(west, south)]]
-        #points = [[QgsPointXY(-19, 38), QgsPointXY(53, 38), QgsPointXY(53, -36),QgsPointXY(-19, -36)]] #africa
         r.setToGeometry(QgsGeometry.fromPolygonXY(points), None)
-        r.setColor(QColor(255, 0, 0, 20)) #R,G,B,Transparency
-        r.setWidth(1)
+        r.setFillColor(QColor(255, 0, 0, 20)) #R,G,B,Transparency
+        r.setWidth(3)
         canvas.zoomWithCenter(north-south,east-west,True)
-        canvas.zoomScale(10000000000000)
+        canvas.setExtent(raster.extent())
+        canvas.zoomToFullExtent()
         canvas.show()
+
 
     def use_shapefile_layer(self):
         """
@@ -575,6 +565,11 @@ class AssimilaDatacCube:
             
         # Reloading the plugin
         reloadPlugin('AssimilaDatacCube')
+
+        # Removes raster base map layers (name: tmp)
+        for i in QgsProject.instance().mapLayersByName("tmp"):
+            QgsProject.instance().removeMapLayer(i)
+
 
         # Create the dialog with elements (after translation) and keep reference
         # Only create GUI ONCE in callback, so that it will only load when the plugin is started
