@@ -22,7 +22,7 @@ import numpy as np
 import tempfile
 
 class Ui_shapefile_Dialog(object):
-    def setupUi(self, Dialog):
+    def setupUi(self, Dialog, iface):
         Dialog.setObjectName("Dialog")
         Dialog.resize(505, 530)
         self.label_9 = QtWidgets.QLabel(Dialog)
@@ -98,7 +98,7 @@ class Ui_shapefile_Dialog(object):
         self.buttonBox.accepted.connect(Dialog.accept)
         self.buttonBox.rejected.connect(Dialog.reject)
         self.btn_browse_shapefile.clicked.connect(self.on_btn_browse_shapefile_clicked)
-
+        self.iface = iface
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
@@ -128,7 +128,7 @@ class Ui_shapefile_Dialog(object):
         # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
         return QCoreApplication.translate('AssimilaDatacCube', message)
 
-    def on_btn_browse_shapefile_clicked(self):
+    def on_btn_browse_shapefile_clicked(self, iface):
         """
         This is triggered when the shapefile browse button is clicked.
         This will allow the user to select location of directory of the shapefile.
@@ -163,6 +163,9 @@ class Ui_shapefile_Dialog(object):
 
         # Change boundaries everytime a new ID is selected
         self.feature_comboBox.currentTextChanged.connect(lambda: self.ID_selectionchange(shape, shp, ID_list))
+        
+        # Adds the vector layer to QGIS
+        self.iface.addVectorLayer(self.dir.__getitem__(0), "Vector Layer: ", "ogr")
 
 
     def ID_selectionchange(self,shape, shp, ID_list):

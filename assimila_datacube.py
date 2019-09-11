@@ -406,7 +406,7 @@ class AssimilaDatacCube:
         print("shapefile clicked")
         shapefile_Dialog = QtWidgets.QDialog()
         ui = Ui_shapefile_Dialog()
-        ui.setupUi(shapefile_Dialog)
+        ui.setupUi(shapefile_Dialog, self.iface)
         res = shapefile_Dialog.exec_()
         if res == QtWidgets.QDialog.Accepted:
             print("Ok button was clicked")
@@ -534,7 +534,6 @@ class AssimilaDatacCube:
 
             # The layer is a vector and not raster
             if ((type(layer_list[i]).__name__)== "QgsVectorLayer"):
-                #self.iface.mapCanvas().setSelectionColor( QColor("red") )
                 layer = layer_list[i]
                 coordinates_list = []
                 selected_fid = []
@@ -545,6 +544,7 @@ class AssimilaDatacCube:
                     # Get the coordinates
                     for pos, ch in enumerate(feature.geometry().vertices()): #4
                         coordinates_list.append(feature.geometry().vertexAt(pos))
+
                 north, east, south, west = self.points_to_cardinal(coordinates_list)
 
                 # Displayed the values in the display boxes
@@ -557,6 +557,7 @@ class AssimilaDatacCube:
                 self.dlg.nesw_radioButton.setDisabled(True)
                 self.dlg.set_canvas_radioButton.setDisabled(True)
                 self.dlg.search_tile_radioButton.setDisabled(True)
+                self.dlg.shapfile_radioButton.setDisabled(True)
    
     def points_to_cardinal(self, coordinates_list):
         """
@@ -610,8 +611,7 @@ class AssimilaDatacCube:
         # Displays map on widget canvas
         self.display_map()
         
-        # If there exists a shapefile on the canvas then will get coordinates from that plolygon
-        
+        # If there exists a shapefile on the canvas then will get coordinates from that polygon
         #self.use_shapefile_layer()
         
 
