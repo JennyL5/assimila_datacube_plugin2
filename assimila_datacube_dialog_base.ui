@@ -340,7 +340,7 @@
    <widget class="QRadioButton" name="set_canvas_radioButton">
     <property name="geometry">
      <rect>
-      <x>160</x>
+      <x>170</x>
       <y>40</y>
       <width>181</width>
       <height>20</height>
@@ -353,7 +353,7 @@
    <widget class="QRadioButton" name="search_tile_radioButton">
     <property name="geometry">
      <rect>
-      <x>290</x>
+      <x>300</x>
       <y>40</y>
       <width>141</width>
       <height>20</height>
@@ -363,17 +363,17 @@
      <string>Search tile</string>
     </property>
    </widget>
-   <widget class="QRadioButton" name="search_tile_radioButton_2">
+   <widget class="QRadioButton" name="shapefile_radioButton">
     <property name="geometry">
      <rect>
-      <x>400</x>
+      <x>420</x>
       <y>40</y>
       <width>141</width>
       <height>20</height>
      </rect>
     </property>
     <property name="text">
-     <string>Import raster image</string>
+     <string>Shape file</string>
     </property>
    </widget>
   </widget>

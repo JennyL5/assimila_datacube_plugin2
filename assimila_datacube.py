@@ -49,6 +49,7 @@ from .DQTools.DQTools import Search, Dataset
 from .nesw_dialog import Ui_NESW_Dialog
 from .canvas_dialog import Ui_canvas_Dialog
 from .search_dialog import Ui_search_Dialog
+from .shapefile_dialog import Ui_shapefile_Dialog
 
 
 class AssimilaDatacCube:
@@ -396,6 +397,24 @@ class AssimilaDatacCube:
             self.add_coordinates_to_UI(coordinates)
         else:
             print("cancelled was clicked")
+    
+    def on_shapefile_radioButton_clicked(self):
+        """
+        When the raster image radio button is toggled it will open
+        up a dialog window for the user to browse for the shapefile.
+        """
+        print("shapefile clicked")
+        shapefile_Dialog = QtWidgets.QDialog()
+        ui = Ui_shapefile_Dialog()
+        ui.setupUi(shapefile_Dialog)
+        res = shapefile_Dialog.exec_()
+        if res == QtWidgets.QDialog.Accepted:
+            print("Ok button was clicked")
+            coordinates = ui.get_values()
+            print(coordinates)
+            self.add_coordinates_to_UI(coordinates)
+        else:
+            print("cancelled was clicked")
 
     def add_coordinates_to_UI(self, coordinates): 
         """
@@ -426,16 +445,23 @@ class AssimilaDatacCube:
         self.update_map(north, east, south, west)
     
     def display_map(self):
+        """
+        This displays the map in the QWidget
+        as soon as the plugin is run.
+        """
+
         # Creates map canvas within the widget on the UI
         map_canvas = QgsMapCanvas(self.dlg.QgsMapCanvas_wid)
-        map_canvas.setMinimumSize(450, 250)        
-        raster = self.iface.addRasterLayer("url='https://server.arcgisonline.com/arcgis/rest/services/Canvas/World_Light_Gray_Base/MapServer' layer='0'", "tmp", "arcgismapserver")
-        #layers = QgsProject.instance().mapLayers()
+        map_canvas.setMinimumSize(450, 250)
+
+        # Gets the base map from the server and ensures only that layer is displayed              
+        raster = self.iface.addRasterLayer("url='https://server.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer' layer='0'", "tmp", "arcgismapserver")
         map_canvas_layer_list = [raster, raster] 
-        #print(map_canvas_layer_list[1].getFeatures)
         map_canvas.setLayers(map_canvas_layer_list)
+
+        # Formats the layer
         map_canvas.setExtent(raster.extent()) # map layer extent
-        map_canvas.zoomToFullExtent()
+        map_canvas.zoomScale(400000000000000) # scaling for tmp raster
         map_canvas.show()
         
     def update_map(self, north, east, south, west):
@@ -452,40 +478,36 @@ class AssimilaDatacCube:
         from qgis.utils import iface
         from qgis.PyQt.QtCore import Qt
 
+        # Creates map canvas within the widget in the window
         canvas = QgsMapCanvas(self.dlg.QgsMapCanvas_wid)
         canvas.setMinimumSize(460, 250)
-        raster = self.iface.addRasterLayer("url='https://server.arcgisonline.com/arcgis/rest/services/Canvas/World_Light_Gray_Base/MapServer' layer='0'", "tmp", "arcgismapserver")
+
+        # Gets the base map from the server and ensures only that layer is displayed       
+        raster = self.iface.addRasterLayer("url='https://server.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer' layer='0'", "tmp", "arcgismapserver")
         canvas_layer_list = [raster, raster] 
         canvas.setLayers(canvas_layer_list)
 
+        # Sets the coordinate reference system
         crsDest = QgsCoordinateReferenceSystem(4326)  # destination
         crsSrc = canvas.mapSettings().destinationCrs() # source
         xform = QgsCoordinateTransform()
         xform.setSourceCrs(crsSrc)
         xform.setDestinationCrs(crsDest)
-        print("north: %s, east: %s, south: %s, west: %s " % (north, east, south, west))
         canvas.setDestinationCrs(crsDest)
-        
-        print("QGIS CRS ID:", crsSrc.srsid()) #0 
-        print("PostGIS SRID:", crsSrc.postgisSrid()) #0 
-        print("Description:", crsSrc.description()) # 
-        
-        print("QGIS CRS ID:", crsDest.srsid()) #3452
-        print("PostGIS SRID:", crsDest.postgisSrid()) #4326
-        print("Description:", crsDest.description()) # wgs 84
         
         # Creating the rubber band rectangle
         r = QgsRubberBand(canvas, True)  # True = a polygon
         # Sepcifying the points of rectangle
         points = [[QgsPointXY(west, north), QgsPointXY(east, north), QgsPointXY(east, south), QgsPointXY(west, south)]]
         r.setToGeometry(QgsGeometry.fromPolygonXY(points), None)
-        r.setFillColor(QColor(255, 0, 0, 20)) #R,G,B,Transparency
+        r.setFillColor(QColor(255, 0, 0, 50)) #R,G,B,Transparency
         r.setWidth(3)
         canvas.zoomWithCenter(north-south,east-west,True)
         canvas.setExtent(raster.extent())
         canvas.zoomToFullExtent()
+        canvas.zoomScale(2000000000) # scaling for tmp raster
+        #canvas.zoomWithCenter(north-south,east-west,True)
         canvas.show()
-
 
     def use_shapefile_layer(self):
         """
@@ -495,38 +517,48 @@ class AssimilaDatacCube:
         :result:
         """
         
+        # Remove all tmp files
+
+        #for i in QgsProject.instance().mapLayers():
+        #    QgsProject.instance().removeMapLayer(i)
+
         map_canvas = QgsMapCanvas
-        layer = self.iface.activeLayer()
-        layer.selectAll() # Selects all vector layer
-        # Assumes that the active layer is points.shp file from the QGIS test suite
-        # (Class (string) and Heading (number) are attributes in points.shp)
-        layer = self.iface.activeLayer()
-        #self.iface.mapCanvas().setSelectionColor( QColor("red") )
-        coordinates_list = []
-        selected_fid = []
-        # Get the first feature id from the layer
-        for feature in layer.getFeatures():
-            selected_fid.append(feature.id())
-            # Get the coordinates
-            for pos, ch in enumerate(feature.geometry().vertices()): #4
-                coordinates_list.append(feature.geometry().vertexAt(pos))
-        #print(coordinates_list[0].x())
-        north, east, south, west = self.points_to_cardinal(coordinates_list)
-        #print(feature.geometry().boundingBox)
 
-        # Displayed the values in the display boxes
-        self.dlg.N_box.setText(str(north))
-        self.dlg.E_box.setText(str(east))
-        self.dlg.S_box.setText(str(south))
-        self.dlg.W_box.setText(str(west))
+        layers = QgsProject.instance().mapLayers()
+        layer_list = [l for l in layers.values()]
 
-        # Disables other options of selcting the bounds
-        self.dlg.nesw_radioButton.setDisabled(True)
-        self.dlg.set_canvas_radioButton.setDisabled(True)
-        self.dlg.search_tile_radioButton.setDisabled(True)
+        print((type(layer_list[0]).__name__)== "QgsVectorLayer")
 
+        for i, j in enumerate(QgsProject.instance().mapLayers()):
+            #print(i)
+
+            # The layer is a vector and not raster
+            if ((type(layer_list[i]).__name__)== "QgsVectorLayer"):
+                #self.iface.mapCanvas().setSelectionColor( QColor("red") )
+                layer = layer_list[i]
+                coordinates_list = []
+                selected_fid = []
+
+                # Get the first feature id from the layer
+                for feature in layer.getFeatures():
+                    selected_fid.append(feature.id())
+                    # Get the coordinates
+                    for pos, ch in enumerate(feature.geometry().vertices()): #4
+                        coordinates_list.append(feature.geometry().vertexAt(pos))
+                north, east, south, west = self.points_to_cardinal(coordinates_list)
+
+                # Displayed the values in the display boxes
+                self.dlg.N_box.setText(str(north))
+                self.dlg.E_box.setText(str(east))
+                self.dlg.S_box.setText(str(south))
+                self.dlg.W_box.setText(str(west))
+
+                # Disables other options of selcting the bounds
+                self.dlg.nesw_radioButton.setDisabled(True)
+                self.dlg.set_canvas_radioButton.setDisabled(True)
+                self.dlg.search_tile_radioButton.setDisabled(True)
+   
     def points_to_cardinal(self, coordinates_list):
-        # Convert rect points to nesw 
         """
         This gets the coordinates, and calculates the 
         north, east, south, west bounds of the polygon
@@ -536,22 +568,19 @@ class AssimilaDatacCube:
         x_list = []
         y_list = []
 
+        # Splits into lists containing x coordinates and list containing y coordinates
         for pos, ch in enumerate(coordinates_list):
             x_list.append(coordinates_list[pos].x())
             y_list.append(coordinates_list[pos].y())
-            
+
+        # Setting the north, east, south, west coordinates    
         north = round(max(y_list), 2)
         south = round(min(y_list),2)
-        print(x_list)
+        #print(x_list)
         #max_x = np.where(x_list == np.amax(x_list))
         east = round(max(x_list), 2)
         west = round(min(x_list), 2)
-        print(y_list)
-
-        print(north)
-        print(east)
-        print(south)
-        print(west)
+        #print(y_list)
 
         return north, east, south, west        
 
@@ -582,10 +611,9 @@ class AssimilaDatacCube:
         self.display_map()
         
         # If there exists a shapefile on the canvas then will get coordinates from that plolygon
-        try: 
-            self.use_shapefile_layer()
-        except Exception:
-            pass
+        
+        #self.use_shapefile_layer()
+        
 
         # Clears the values from previous run
         self.dlg.lineEdit.clear() #keyfile
@@ -618,8 +646,8 @@ class AssimilaDatacCube:
         
         # Display dropdown for subproducts
         self.dlg.subproducts_comboBox.addItem('rfe') # Defaulting 1st item Subprodusct is 'rfe'
-        """ Issue: for nth run, perform nth subproduct_selectionchange """
-        self.dlg.products_comboBox.currentTextChanged.connect(self.subproduct_selectionchange) # For updating the subproduct
+        
+         # For updating the subproduct
         self.dlg.subproducts_comboBox.removeItem(1) # Removing default subproduct value of 'rfe'
 
         # Links the Radio buttons and datetime widgets
@@ -629,7 +657,7 @@ class AssimilaDatacCube:
         self.dlg.nesw_radioButton.toggled.connect(self.on_nesw_radioButton_clicked)
         self.dlg.set_canvas_radioButton.toggled.connect(self.on_set_canvas_radioButton_clicked)
         self.dlg.search_tile_radioButton.toggled.connect(self.on_search_tile_radioButton_clicked)
-
+        self.dlg.shapefile_radioButton.toggled.connect(self.on_shapefile_radioButton_clicked)
 
         # Show the dialog
         self.dlg.show()
