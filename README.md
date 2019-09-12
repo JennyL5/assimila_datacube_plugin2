@@ -18,33 +18,28 @@ In order to install modules, open OSGeo4W shell, change to directory of plugin a
 ```
 python -m ensurepip --default-pip 
 py3_env
-pip install numpy
-pip install xarray # or xarray==0.10.4
-pip install pyqt5-tools
-pip install pb_tool
+
+pip install xarray==0.10.4
+pip install pyshp
+
 ```
 
 ## Deployment
 
 How to deploy this on a live system
 To import pluging:
+* Copy plugin folder into the QGIS plugins folder, located: C:\Users\USER\AppData\Roaming\QGIS\QGIS3\profiles\default\python\plugins (windows)
 * Open QGIS, click 'Plugins' on the navigation bar and select 'Manage and install plugins'
-* From the side bar, select 'Install from ZIP'
-* Browse or copy and paste the zipped plugin folder
-* Click 'Install Plugin' below
-* After installation, select 'Installed' from the side bar, and check the plugin imported
+* From the side bar, select 'Installed' and check the plugin
 * Click the plugin icon on the main page to run.
 
 ## Built With
 
 * [QGIS in OSGeo4W Network Installer](https://qgis.org/en/site/forusers/download.html) - Plugin software
-* [Qt Designer 5.13](https://doc.qt.io/qt-5/qtdesigner-manual.html) - Plugin's user interface
+* [Qt Designer 5.13](https://doc.qt.io/qt-5/qtdesigner-manual.html) - Plugin's user interface designer
 * [Qgis-Plugin-Builder](https://g-sherman.github.io/Qgis-Plugin-Builder/) - Plugin for building a plugin in QGIS
 
 ## Acknowledgments
 
-* SRTM Downloader
 * QGIS Plugin Builder 
 
-
-# assimila_datacube_plugin2
