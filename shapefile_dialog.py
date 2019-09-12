@@ -110,7 +110,7 @@ class Ui_shapefile_Dialog(object):
         self.label_5.setText(_translate("Dialog", "North"))
         self.label_7.setText(_translate("Dialog", "West"))
         self.label_8.setText(_translate("Dialog", "East"))
-        self.label.setText(_translate("Dialog", "Browse to import shape file or use the one picked up."))
+        self.label.setText(_translate("Dialog", "Browse to import shape file."))
         self.btn_browse_shapefile.setText(_translate("Dialog", "..."))
         self.label_2.setText(_translate("Dialog", "Select feature:"))
     

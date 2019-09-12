@@ -213,7 +213,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Browse to import shape file or use the one picked up.</string>
+    <string>Browse to import shape file.</string>
    </property>
   </widget>
   <widget class="QToolButton" name="btn_browse_shapefile">
