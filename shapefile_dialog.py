@@ -9,10 +9,12 @@ from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QFileDialog
 from qgis.core import *
-from qgis.core import QgsProject, Qgis, QgsPointXY, QgsGeometry, QgsPoint, QgsVectorLayer
+from qgis.core import QgsProject, Qgis, QgsPointXY, QgsGeometry, QgsPoint, \
+    QgsVectorLayer
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QMessageBox
 from PyQt5 import QtCore, QtGui, QtWidgets
-from qgis.PyQt.QtNetwork import QNetworkRequest, QNetworkReply,  QNetworkAccessManager
+from qgis.PyQt.QtNetwork import QNetworkRequest, QNetworkReply,  \
+    QNetworkAccessManager
 from PyQt5.QtWidgets import *
 from qgis.PyQt import uic
 from PyQt5.QtWidgets import QFileDialog
@@ -28,7 +30,8 @@ class Ui_shapefile_Dialog(object):
         self.label_9 = QtWidgets.QLabel(Dialog)
         self.label_9.setGeometry(QtCore.QRect(20, 30, 401, 101))
         self.label_9.setText("")
-        self.label_9.setPixmap(QtGui.QPixmap(":/plugins/assimila_datacube2/img/assimila_namelogo.png"))
+        self.label_9.setPixmap(QtGui.QPixmap(":/plugins/assimila_datacube2/"
+                                             "img/assimila_namelogo.png"))
         self.label_9.setScaledContents(True)
         self.label_9.setObjectName("label_9")
         self.S_spinBox = QtWidgets.QDoubleSpinBox(Dialog)
@@ -56,7 +59,8 @@ class Ui_shapefile_Dialog(object):
         self.buttonBox = QtWidgets.QDialogButtonBox(Dialog)
         self.buttonBox.setGeometry(QtCore.QRect(140, 470, 341, 32))
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox
+                                          .Cancel|QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName("buttonBox")
         self.label_5 = QtWidgets.QLabel(Dialog)
         self.label_5.setGeometry(QtCore.QRect(200, 290, 91, 16))
@@ -105,7 +109,8 @@ class Ui_shapefile_Dialog(object):
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
-        self.Description.setText(_translate("Dialog", "A QGIS plugin to visualise a datacube"))
+        self.Description.setText(_translate("Dialog", "A QGIS plugin to "
+                                                      "visualise a datacube"))
         self.label_6.setText(_translate("Dialog", "South"))
         self.label_5.setText(_translate("Dialog", "North"))
         self.label_7.setText(_translate("Dialog", "West"))
@@ -130,14 +135,16 @@ class Ui_shapefile_Dialog(object):
 
     def on_btn_browse_shapefile_clicked(self, iface):
         """
-        This is triggered when the shapefile browse button is clicked.
-        This will allow the user to select location of directory of the shapefile.
+        This is triggered when the shapefile browse button is clicked. This
+        will allow the user to select location of directory of the shapefile.
         """
         # Gets directory for the keyfile - default: /users/{user_name}/Documents
-        self.dir = QFileDialog.getOpenFileName(None, self.tr("Open File"),
+        self.dir = QFileDialog.getOpenFileName(None,
+                                               self.tr("Open File"),
                                                     # os.path.dirname(__file__),
-                                                    os.path.join(expanduser("~"), "Documents"), # default location
-                                                    ("Image(*Images(*.shp)"))
+                                               os.path.join(expanduser("~"),
+                                                            "Documents"),
+                                                            ("(*.shp)"))
 
         # Displays in lineEdit                             
         self.lineEdit.setText(self.dir.__getitem__(0))   
@@ -151,7 +158,7 @@ class Ui_shapefile_Dialog(object):
         ID_list= []
 
         for pos, ch in enumerate(shape):
-            print(pos)
+            #print(pos)
             #feature = shape.shapeRecords()
 
             #shp = shape.__geo_interface__["features"]
@@ -162,10 +169,12 @@ class Ui_shapefile_Dialog(object):
         self.feature_comboBox.addItems(ID_list) 
 
         # Change boundaries everytime a new ID is selected
-        self.feature_comboBox.currentTextChanged.connect(lambda: self.ID_selectionchange(shape, shp, ID_list))
+        self.feature_comboBox.currentTextChanged\
+            .connect(lambda: self.ID_selectionchange(shape, shp, ID_list))
         
         # Adds the vector layer to QGIS
-        self.iface.addVectorLayer(self.dir.__getitem__(0), "Vector Layer: ", "ogr")
+        self.iface.addVectorLayer(self.dir.__getitem__(0),
+                                  "Vector Layer: ", "ogr")
 
 
     def ID_selectionchange(self,shape, shp, ID_list):
@@ -180,7 +189,7 @@ class Ui_shapefile_Dialog(object):
 
         for pos, ch in enumerate(ID_list):
             if ID_list[pos] == self.feature_comboBox.currentText():
-                print("same pos")
+                #print("same pos")
                 if shapes[pos].shapeType == shapefile.POLYGON:
                     #print (shape.bbox)  
                     # bbox (west, south, east, north)

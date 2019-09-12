@@ -25,13 +25,15 @@ from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QFileDialog
 from qgis.core import *
-from qgis.core import QgsProject, Qgis, QgsPointXY, QgsGeometry, QgsPoint, QgsVectorLayer
+from qgis.core import QgsProject, Qgis, QgsPointXY, QgsGeometry, QgsPoint, \
+    QgsVectorLayer
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QMessageBox
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QColor
 from qgis.gui import QgsMapCanvas, QgsRubberBand
-from qgis.utils import plugins, reloadPlugin, loadPlugin, startPlugin, isPluginLoaded
-from qgis.PyQt.QtNetwork import QNetworkRequest, QNetworkReply,  QNetworkAccessManager
+from qgis.utils import plugins, reloadPlugin, loadPlugin, startPlugin
+from qgis.PyQt.QtNetwork import QNetworkRequest, QNetworkReply, \
+    QNetworkAccessManager
 
 # Initialize Qt resources from file resources.py
 from .resources import *
@@ -231,7 +233,7 @@ class AssimilaDatacCube:
             # 01/01/2000 - 31/01/2000 -> SUCCESS 
             # 01/01/2000 - 01/02/2000 -> FAIL 
         if start.daysTo(end) > 30:
-            raise ValueError('Maximum number of delays selected is limited to 30 days')
+            raise ValueError('Maximum number of days is limited to 30 days')
 
         # check east value is greater than west value
         if east != 0 and west != 0 and east < west:
@@ -257,32 +259,36 @@ class AssimilaDatacCube:
         """
         self.dlg.subproducts_comboBox.clear()
         product = self.dlg.products_comboBox.currentText()
-        print(product)
+        #print(product)
         subproducts = Search.get_subproduct_list_of_product(self, product)
-        print(subproducts)
+        #print(subproducts)
         self.dlg.subproducts_comboBox.addItems(subproducts) 
 
     def radio_btn_state(self, b, dt1, dt2):
         """
         Enables and disables the date and hour picker widgets when
         the radio buttons are selected.
-        :param b: The radio button for single time step - self.dlg.single_radioButton
-        :param dt1: The data and time picker for the start - self.dlg.dateTimeEdit_1
-        :param dt2: The date and time picker for the end - self.dlg.dateTimeEdit_2
+        :param b: The radio button for single time step -
+                  self.dlg.single_radioButton
+        :param dt1: The data and time picker for the start -
+                    self.dlg.dateTimeEdit_1
+        :param dt2: The date and time picker for the end -
+                    self.dlg.dateTimeEdit_2
         :return:
         """
-        # If single radio button (b) is checked, then enable 1 datetime widget box
-        if b.isChecked() == True:
+        # If single radiobutton b is checked, then enable 1 datetime widget box
+        if b.isChecked():
             dt1.setDisabled(False)
             dt2.setDisabled(True)
             #print (b.text()+" is selected")
         else:
-            # Multi radio button is checked, so enable both datetime widget boxes
+            # Multi radiobutton is checked, so enable both datetime widget boxes
             dt1.setDisabled(False)
             dt2.setDisabled(False)
             #print (b.text()+" is deselected")
     
-    def get_data_from_datacube_nesw(self, product, subproduct, north, east, south, west, start, end):
+    def get_data_from_datacube_nesw(self, product, subproduct, north, east,
+                                    south, west, start, end):
         """
         The request sent to the datacube to process the data given the key file.
         :param product: The name of the product
@@ -296,22 +302,26 @@ class AssimilaDatacCube:
         :return:
         """
 
-        # Get key_file location with access to the datacube to get_data from Dataset.py
+        # Get key_file location with access to the datacube to get_data
+        # from Dataset.py
         key_file = self.dlg.lineEdit.displayText()
         print(f"key_file location: {key_file}")
     
         # Using DQTools
-        query = Dataset(product=product, subproduct=subproduct, region=None, tile=None, res=None, key_file=key_file)        
+        query = Dataset(product=product, subproduct=subproduct, region=None,
+                        tile=None, res=None, key_file=key_file)
         region = [north, east, south, west]
-        query.get_data(start = start, stop=end, region=region, tile=None, res=None,)
+        query.get_data(start = start, stop=end, region=region, tile=None,
+                       res=None,)
 
         # Return an Xarray
         return query.data
     
-    def create_raster_file(self, product, subproduct, north, east, south, west, y):
+    def create_raster_file(self, product, subproduct, north, east, south,
+                           west, y):
         """
-        This prepares and creates the path where the Xarray writes to netcdf file, 
-        which can be added as a Raster layer.
+        This prepares and creates the path where the Xarray writes to netcdf
+        file, which can be added as a Raster layer.
         :param product: The name of the product
         :param subproduct: The name of the subproduct
         :param north: The name of the north point
@@ -325,11 +335,16 @@ class AssimilaDatacCube:
         """
 
         # Re-formats the start and end dates and hour for filename
-        start_datetime = self.dlg.dateTimeEdit_1.dateTime().toString("yyyyMMdd_HH")
-        end_datetime = self.dlg.dateTimeEdit_2.dateTime().toString("yyyyMMdd_HH")
+        start_datetime = self.dlg.dateTimeEdit_1.dateTime()\
+                         .toString("yyyyMMdd_HH")
+        end_datetime = self.dlg.dateTimeEdit_2.dateTime()\
+                       .toString("yyyyMMdd_HH")
 
         # Create filename and find its path
-        filename = "%s_%s_N%d_E%d_S%d_W%d_%s_%s" % (product, subproduct, north, east, south, west, start_datetime, end_datetime)
+        filename = "%s_%s_N%d_E%d_S%d_W%d_%s_%s" % (product, subproduct, north,
+                                                    east, south, west,
+                                                    start_datetime,
+                                                    end_datetime)
         #default_temp_path = f"{tempfile.gettempdir()}/{filename}.nc"
         a = (self.dlg.lineEdit_2.displayText())
         b = (f"{filename}.nc")
@@ -339,7 +354,10 @@ class AssimilaDatacCube:
         y.to_netcdf(default_temp_path)
 
         # Creates new layer and adds to current project
-        self.iface.addRasterLayer(default_temp_path, "%s_%s_N%d_E%d_S%d_W%d_%s_%s" % (product, subproduct, north, east, south, west, start_datetime, end_datetime))
+        self.iface.addRasterLayer(default_temp_path,
+                                  "%s_%s_N%d_E%d_S%d_W%d_%s_%s" %
+                                  (product, subproduct, north, east, south,
+                                   west, start_datetime, end_datetime))
 
     def on_nesw_radioButton_clicked(self):
         """
@@ -347,18 +365,16 @@ class AssimilaDatacCube:
         up a dialog window for the user to manually enter the north, east
         south, west bounds.
         """
-        print("nesw clicked")
+        #print("nesw clicked")
         NESW_Dialog = QtWidgets.QDialog()
         ui = Ui_NESW_Dialog()
         ui.setupUi(NESW_Dialog)
         res = NESW_Dialog.exec_()
         if res == QtWidgets.QDialog.Accepted:
-            print("Ok button was clicked")
+            #print("Ok button was clicked")
             coordinates = ui.get_values()
-            print(coordinates)
+            #print(coordinates)
             self.add_coordinates_to_UI(coordinates)
-        else:
-            print("cancelled was clicked")
     
     def on_set_canvas_radioButton_clicked(self):
         """
@@ -366,18 +382,16 @@ class AssimilaDatacCube:
         up a dialog window for the user to click set canvas extent, 
         and get the coordinates of the canvas. 
         """
-        print("set canvas clicked")
+        #print("set canvas clicked")
         canvas_Dialog = QtWidgets.QDialog()
         ui = Ui_canvas_Dialog()
         ui.setupUi(self.iface, canvas_Dialog)
         res = canvas_Dialog.exec_()
         if res == QtWidgets.QDialog.Accepted:
-            print("Ok button was clicked")
+            #print("Ok button was clicked")
             coordinates = ui.get_values()
-            print(coordinates)
+            #print(coordinates)
             self.add_coordinates_to_UI(coordinates)
-        else:
-            print("cancelled was clicked")
 
     def on_search_tile_radioButton_clicked(self):
         """
@@ -385,36 +399,32 @@ class AssimilaDatacCube:
         up a dialog window for the user to search tile, and get
         the coordinates of the tile. 
         """
-        print("search tile clicked")
+        #print("search tile clicked")
         search_Dialog = QtWidgets.QDialog()
         ui = Ui_search_Dialog()
         ui.setupUi(search_Dialog)
         res = search_Dialog.exec_()
         if res == QtWidgets.QDialog.Accepted:
-            print("Ok button was clicked")
+            #print("Ok button was clicked")
             coordinates = ui.get_values()
-            print(coordinates)
+            #print(coordinates)
             self.add_coordinates_to_UI(coordinates)
-        else:
-            print("cancelled was clicked")
     
     def on_shapefile_radioButton_clicked(self):
         """
         When the raster image radio button is toggled it will open
         up a dialog window for the user to browse for the shapefile.
         """
-        print("shapefile clicked")
+        #print("shapefile clicked")
         shapefile_Dialog = QtWidgets.QDialog()
         ui = Ui_shapefile_Dialog()
         ui.setupUi(shapefile_Dialog, self.iface)
         res = shapefile_Dialog.exec_()
         if res == QtWidgets.QDialog.Accepted:
-            print("Ok button was clicked")
+            #print("Ok button was clicked")
             coordinates = ui.get_values()
-            print(coordinates)
+            #print(coordinates)
             self.add_coordinates_to_UI(coordinates)
-        else:
-            print("cancelled was clicked")
 
     def add_coordinates_to_UI(self, coordinates): 
         """
@@ -454,8 +464,11 @@ class AssimilaDatacCube:
         map_canvas = QgsMapCanvas(self.dlg.QgsMapCanvas_wid)
         map_canvas.setMinimumSize(450, 250)
 
-        # Gets the base map from the server and ensures only that layer is displayed              
-        self.raster = self.iface.addRasterLayer("url='https://server.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer' layer='0'", "tmp", "arcgismapserver")
+        # Gets the base map from the server and ensures only that layer is
+        # displayed
+        self.raster = self.iface.addRasterLayer(
+            "url='https://server.arcgisonline.com/arcgis/rest/services/"
+            "World_Street_Map/MapServer' layer='0'", "tmp", "arcgismapserver")
         map_canvas_layer_list = [self.raster, self.raster] 
         map_canvas.setLayers(map_canvas_layer_list)
 
@@ -482,9 +495,8 @@ class AssimilaDatacCube:
         canvas = QgsMapCanvas(self.dlg.QgsMapCanvas_wid)
         canvas.setMinimumSize(460, 250)
 
-        # Gets the base map from the server and ensures only that layer is displayed       
-        #raster = self.iface.addRasterLayer("url='https://server.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer' layer='0'", "tmp", "arcgismapserver")
-        canvas_layer_list = [self.raster, self.raster] 
+        # Gets the basemap from the server and displays only that layer
+        canvas_layer_list = [self.raster, self.raster]
         canvas.setLayers(canvas_layer_list)
 
         # Sets the coordinate reference system
@@ -498,7 +510,8 @@ class AssimilaDatacCube:
         # Creating the rubber band rectangle
         r = QgsRubberBand(canvas, True)  # True = a polygon
         # Sepcifying the points of rectangle
-        points = [[QgsPointXY(west, north), QgsPointXY(east, north), QgsPointXY(east, south), QgsPointXY(west, south)]]
+        points = [[QgsPointXY(west, north), QgsPointXY(east, north),
+                   QgsPointXY(east, south), QgsPointXY(west, south)]]
         r.setToGeometry(QgsGeometry.fromPolygonXY(points), None)
         r.setFillColor(QColor(255, 0, 0, 50)) #R,G,B,Transparency
         r.setWidth(3)
@@ -511,10 +524,10 @@ class AssimilaDatacCube:
 
     def use_shapefile_layer(self):
         """
-        This uses the polygon drawn using 'digitalizing tools' accessed via the shapefile
-        to get the coordinates and calculate the north, east, south, west bounds. This 
-        will then be passed to the main UI.
-        :result:
+        This uses the polygon drawn using 'digitalizing tools' accessed via
+        the shapefile to get the coordinates and calculate the north, east,
+        south, west bounds. This will then be passed to the main UI.
+        :return:
         """
         
         # Remove all tmp files
@@ -527,13 +540,13 @@ class AssimilaDatacCube:
         layers = QgsProject.instance().mapLayers()
         layer_list = [l for l in layers.values()]
 
-        print((type(layer_list[0]).__name__)== "QgsVectorLayer")
+        print(type(layer_list[0].__name__)== "QgsVectorLayer")
 
         for i, j in enumerate(QgsProject.instance().mapLayers()):
             #print(i)
 
             # The layer is a vector and not raster
-            if ((type(layer_list[i]).__name__)== "QgsVectorLayer"):
+            if type(layer_list[i]).__name__== "QgsVectorLayer":
                 layer = layer_list[i]
                 coordinates_list = []
                 selected_fid = []
@@ -542,10 +555,11 @@ class AssimilaDatacCube:
                 for feature in layer.getFeatures():
                     selected_fid.append(feature.id())
                     # Get the coordinates
-                    for pos, ch in enumerate(feature.geometry().vertices()): #4
+                    for pos, ch in enumerate(feature.geometry().vertices()):
                         coordinates_list.append(feature.geometry().vertexAt(pos))
 
-                north, east, south, west = self.points_to_cardinal(coordinates_list)
+                north, east, south, west = \
+                    self.points_to_cardinal(coordinates_list)
 
                 # Displayed the values in the display boxes
                 self.dlg.N_box.setText(str(north))
@@ -564,12 +578,12 @@ class AssimilaDatacCube:
         This gets the coordinates, and calculates the 
         north, east, south, west bounds of the polygon
         :param coordinates_list: The list of x,y coordinates of the polygon
-        :result:
+        :return:
         """
         x_list = []
         y_list = []
 
-        # Splits into lists containing x coordinates and list containing y coordinates
+        # Splits into lists containing x coordinates and y coordinates
         for pos, ch in enumerate(coordinates_list):
             x_list.append(coordinates_list[pos].x())
             y_list.append(coordinates_list[pos].y())
@@ -587,13 +601,22 @@ class AssimilaDatacCube:
 
 
     def get_change(self, button, method):
+        """ 
+        This method checks the status of the radio buttons which
+        allows the users to select the method they want to input
+        the n,e,s,w bounds into the UI map
+        :param button: radio button passed throug
+        :param method: method to run after relevant radio button
+                       is clicked.
+        :return:
+        """
         if button.isChecked():
             method()
  
     def run(self):
         """
-        This prepares the user interface of the plugin and the performs the events 
-        once "OK" is clicked.
+        This prepares the user interface of the plugin and the performs
+        the events once "OK" is clicked.
         :return:
         """
             
@@ -606,16 +629,17 @@ class AssimilaDatacCube:
 
 
         # Create the dialog with elements (after translation) and keep reference
-        # Only create GUI ONCE in callback, so that it will only load when the plugin is started
+        # Only create GUI ONCE in callback, so that it will only load when
+        # the plugin is started
         if self.first_start == True:
             self.first_start = False
             self.dlg = AssimilaDatacCubeDialog(self.iface)
 
-        
         # Displays map on widget canvas
         self.display_map()
         
-        # If there exists a shapefile on the canvas then will get coordinates from that polygon
+        # If there exists a shapefile on the canvas then will get coordinates
+        # from that polygon
         #self.use_shapefile_layer()
 
         # Clears the values from previous run
@@ -623,8 +647,8 @@ class AssimilaDatacCube:
         self.dlg.lineEdit_2.clear() #rasterfile
 
         # Displays key file path location
-        #self.key_file = os.path.join(os.path.dirname(__file__), ".assimila_dq")
-        self.key_file = os.path.join(expanduser("~"), "Documents", ".assimila_dq") # default location
+        self.key_file = os.path.join(expanduser("~"), "Documents",
+                                     ".assimila_dq")
         self.dlg.lineEdit.insert(self.key_file)
 
         # Display default raster file path location
@@ -641,27 +665,46 @@ class AssimilaDatacCube:
         # Display dropdowns for products
         # Only runs on the first run as the products_comboBox is empty
         # Instead of clearing the products combobox and then appending everytime
-        # Only searches for products once despite the number of times the plugin is run
+        # Only searches for products once
         if self.dlg.products_comboBox.currentIndex() == -1:
             products = Search.products().name.tolist()
             self.dlg.products_comboBox.setDuplicatesEnabled(False) 
             self.dlg.products_comboBox.addItems(products)
         
         # Display dropdown for subproducts
-        self.dlg.subproducts_comboBox.addItem('rfe') # Defaulting 1st item Subprodusct is 'rfe'
-        self.dlg.products_comboBox.currentTextChanged.connect(self.subproduct_selectionchange) # For updating the subproduct
+        # Defaulting 1st item Subprodusct is 'rfe'
+        self.dlg.subproducts_comboBox.addItem('rfe')
+        # For updating the subproduct
+        self.dlg.products_comboBox.currentTextChanged\
+            .connect(self.subproduct_selectionchange)
 
-         # For updating the subproduct
-        self.dlg.subproducts_comboBox.removeItem(1) # Removing default subproduct value of 'rfe'
+         #  Removing default subproduct value of 'rfe'
+        self.dlg.subproducts_comboBox.removeItem(1)
 
         # Links the Radio buttons and datetime widgets
-        self.dlg.multi_radioButton.toggled.connect(lambda: self.radio_btn_state(self.dlg.single_radioButton, self.dlg.dateTimeEdit_1, self.dlg.dateTimeEdit_2))
+        self.dlg.multi_radioButton.toggled\
+            .connect(lambda: self.radio_btn_state(self.dlg.single_radioButton,
+                                                  self.dlg.dateTimeEdit_1,
+                                                  self.dlg.dateTimeEdit_2))
 
-        # Links the radio buttons to their actions once clicked, radioButtons must be connected first before checking their status by calling get_change()
-        self.dlg.nesw_radioButton.toggled.connect(lambda: self.get_change(self.dlg.nesw_radioButton, self.on_nesw_radioButton_clicked))
-        self.dlg.set_canvas_radioButton.toggled.connect(lambda: self.get_change(self.dlg.set_canvas_radioButton, self.on_set_canvas_radioButton_clicked))
-        self.dlg.search_tile_radioButton.toggled.connect(lambda: self.get_change(self.dlg.search_tile_radioButton, self.on_search_tile_radioButton_clicked))
-        self.dlg.shapefile_radioButton.toggled.connect(lambda: self.get_change(self.dlg.shapefile_radioButton, self.on_shapefile_radioButton_clicked ))
+        # Links the radio buttons to their actions once clicked,
+        # radioButtons must be connected first before checking
+        # their status by calling get_change()
+        self.dlg.nesw_radioButton.toggled\
+            .connect(lambda: self.get_change(self.dlg.nesw_radioButton,
+                                             self.on_nesw_radioButton_clicked))
+        self.dlg.set_canvas_radioButton.toggled\
+            .connect(lambda: self.get_change(
+            self.dlg.set_canvas_radioButton,
+            self.on_set_canvas_radioButton_clicked))
+        self.dlg.search_tile_radioButton.toggled\
+            .connect(lambda: self.get_change(
+            self.dlg.search_tile_radioButton,
+            self.on_search_tile_radioButton_clicked))
+        self.dlg.shapefile_radioButton.toggled\
+            .connect(lambda: self.get_change(
+            self.dlg.shapefile_radioButton,
+            self.on_shapefile_radioButton_clicked ))
 
         # Show the dialog
         self.dlg.show()
@@ -673,40 +716,47 @@ class AssimilaDatacCube:
 
             # runs process using values in widgets
             product = (self.dlg.products_comboBox.currentText()).lower()
-            print(f"The product being run is {product}")
+            #print(f"The product being run is {product}")
             subproduct = self.dlg.subproducts_comboBox.currentText()
-            print(f"The subproduct being run is {subproduct}")
+            #print(f"The subproduct being run is {subproduct}")
             north = float(self.dlg.N_box.displayText())
-            print('N: ' + str(north))
+            #print('N: ' + str(north))
             east = float(self.dlg.E_box.displayText())
-            print('E: ' + str(east))
+            #print('E: ' + str(east))
             south = float(self.dlg.S_box.displayText())
-            print('S: ' + str(south))
+            #print('S: ' + str(south))
             west = float(self.dlg.W_box.displayText())
-            print('W: ' + str(west))
+            #print('W: ' + str(west))
 
             # Format start and end dates and hour for datecube
-            start = self.dlg.dateTimeEdit_1.dateTime().toString("yyyy-MM-ddTHH:00:00")
+            start = self.dlg.dateTimeEdit_1.dateTime()\
+                .toString("yyyy-MM-ddTHH:00:00")
             if self.dlg.single_radioButton.isChecked():
                 end = start
                 # Perform check method for d1
-                self.check(north, east, south, west, self.dlg.dateTimeEdit_1.dateTime(), self.dlg.dateTimeEdit_1.dateTime())
+                self.check(north, east, south, west,
+                           self.dlg.dateTimeEdit_1.dateTime(),
+                           self.dlg.dateTimeEdit_1.dateTime())
             else: 
-                end = self.dlg.dateTimeEdit_2.dateTime().toString("yyyy-MM-ddTHH:00:00")
+                end = self.dlg.dateTimeEdit_2.dateTime()\
+                    .toString("yyyy-MM-ddTHH:00:00")
                 # Perform check method for d1 d2
-                self.check(north, east, south, west, self.dlg.dateTimeEdit_1.dateTime(), self.dlg.dateTimeEdit_2.dateTime())
-            
-            print(start)
-            print(end)
+                self.check(north, east, south, west,
+                           self.dlg.dateTimeEdit_1.dateTime(),
+                           self.dlg.dateTimeEdit_2.dateTime())
 
             try: 
                 # Get Xarray from datacube
-                y = self.get_data_from_datacube_nesw(product, subproduct, north, east, south, west, start, end)
+                y = self.get_data_from_datacube_nesw(product, subproduct,
+                                                     north, east, south, west,
+                                                     start, end)
     
                 # Write Xarray to file
-                self.create_raster_file(product, subproduct, north, east, south, west, y)
+                self.create_raster_file(product, subproduct, north, east,
+                                        south, west, y)
             except Exception as e:
-                print("Wrong key_file location or contact Assimila for key file." + str(e))
+                print("Wrong keyfile location or contact Assimila for key file."
+                      + str(e))
 
             pass
 

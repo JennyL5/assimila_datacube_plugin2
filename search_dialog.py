@@ -32,7 +32,8 @@ class Ui_search_Dialog(object):
         self.label_9 = QtWidgets.QLabel(Dialog)
         self.label_9.setGeometry(QtCore.QRect(40, 30, 401, 101))
         self.label_9.setText("")
-        self.label_9.setPixmap(QtGui.QPixmap(":/plugins/assimila_datacube2/img/assimila_namelogo.png"))
+        self.label_9.setPixmap(QtGui.QPixmap(":/plugins/assimila_datacube2/"
+                                             "img/assimila_namelogo.png"))
         self.label_9.setScaledContents(True)
         self.label_9.setObjectName("label_9")
         self.N_spinBox = QtWidgets.QDoubleSpinBox(Dialog)
@@ -57,7 +58,8 @@ class Ui_search_Dialog(object):
         self.buttonBox = QtWidgets.QDialogButtonBox(Dialog)
         self.buttonBox.setGeometry(QtCore.QRect(130, 390, 341, 32))
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox
+                                          .Cancel|QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName("buttonBox")
         self.label_7 = QtWidgets.QLabel(Dialog)
         self.label_7.setGeometry(QtCore.QRect(120, 250, 91, 16))
@@ -94,7 +96,8 @@ class Ui_search_Dialog(object):
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
-        self.Description.setText(_translate("Dialog", "A QGIS plugin to visualise a datacube"))
+        self.Description.setText(_translate("Dialog", "A QGIS plugin to "
+                                                      "visualise a datacube"))
         self.label_5.setText(_translate("Dialog", "North"))
         self.label_7.setText(_translate("Dialog", "West"))
         self.label_6.setText(_translate("Dialog", "South"))
@@ -107,11 +110,11 @@ class Ui_search_Dialog(object):
         find the tile and add the coordinates to the UI.
         """
 
-        print("searching for tile...")
-        print(self.search_tile.displayText())
+        #print("searching for tile...")
+        #print(self.search_tile.displayText())
          
         coordinates = self.find_tile()
-        print(coordinates)
+        #print(coordinates)
         self.add_coordinates_to_UI(coordinates)
    
  
@@ -125,7 +128,7 @@ class Ui_search_Dialog(object):
         if tile_name=="":
             raise Exception("no tile name entered")
         elif tile_name:
-            print("tile selected " + tile_name)
+            #print("tile selected " + tile_name)
             bounds = get_bounds(tile_name.lower())._asdict()
             coordinates = list(bounds.values())
         else:

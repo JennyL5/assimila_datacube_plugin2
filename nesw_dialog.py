@@ -21,7 +21,8 @@ class Ui_NESW_Dialog(object):
         self.buttonBox = QtWidgets.QDialogButtonBox(NESW_Dialog)
         self.buttonBox.setGeometry(QtCore.QRect(130, 390, 341, 32))
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox
+                                          .Cancel|QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName("buttonBox")
         self.W_spinBox = QtWidgets.QDoubleSpinBox(NESW_Dialog)
         self.W_spinBox.setGeometry(QtCore.QRect(130, 250, 81, 41))
@@ -60,7 +61,8 @@ class Ui_NESW_Dialog(object):
         self.label_9 = QtWidgets.QLabel(NESW_Dialog)
         self.label_9.setGeometry(QtCore.QRect(40, 30, 401, 101))
         self.label_9.setText("")
-        self.label_9.setPixmap(QtGui.QPixmap(":/plugins/assimila_datacube2/img/assimila_namelogo.png"))
+        self.label_9.setPixmap(QtGui.QPixmap(":/plugins/assimila_datacube2/"
+                                             "img/assimila_namelogo.png"))
         self.label_9.setScaledContents(True)
         self.label_9.setObjectName("label_9")
         self.Description = QtWidgets.QLabel(NESW_Dialog)
@@ -87,7 +89,9 @@ class Ui_NESW_Dialog(object):
         self.label_8.setText(_translate("NESW_Dialog", "East"))
         self.label_6.setText(_translate("NESW_Dialog", "South"))
         self.label_7.setText(_translate("NESW_Dialog", "West"))
-        self.Description.setText(_translate("NESW_Dialog", "A QGIS plugin to visualise a datacube"))
+        self.Description.setText(_translate("NESW_Dialog", "A QGIS plugin "
+                                                           "to visualise a "
+                                                           "datacube"))
         self.label_81.setText(_translate("NESW_Dialog", "East"))
 
     def get_values(self):   

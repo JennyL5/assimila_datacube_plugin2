@@ -11,7 +11,8 @@ from qgis.PyQt import uic
 import os, math
 from qgis.core import *
 from qgis.PyQt import uic
-from qgis.PyQt.QtNetwork import QNetworkRequest, QNetworkReply,  QNetworkAccessManager
+from qgis.PyQt.QtNetwork import QNetworkRequest, QNetworkReply, \
+    QNetworkAccessManager
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'canvas_dialog.ui'))
@@ -31,7 +32,8 @@ class Ui_canvas_Dialog(object):
         self.label_9 = QtWidgets.QLabel(Dialog)
         self.label_9.setGeometry(QtCore.QRect(40, 30, 401, 101))
         self.label_9.setText("")
-        self.label_9.setPixmap(QtGui.QPixmap(":/plugins/assimila_datacube2/img/assimila_namelogo.png"))
+        self.label_9.setPixmap(QtGui.QPixmap(":/plugins/assimila_datacube2/"
+                                             "img/assimila_namelogo.png"))
         self.label_9.setScaledContents(True)
         self.label_9.setObjectName("label_9")
         self.btn_extent = QtWidgets.QPushButton(Dialog)
@@ -59,7 +61,8 @@ class Ui_canvas_Dialog(object):
         self.buttonBox = QtWidgets.QDialogButtonBox(Dialog)
         self.buttonBox.setGeometry(QtCore.QRect(130, 390, 341, 32))
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox
+                                          .Cancel|QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName("buttonBox")
         self.label_7 = QtWidgets.QLabel(Dialog)
         self.label_7.setGeometry(QtCore.QRect(60, 230, 91, 16))
@@ -86,7 +89,8 @@ class Ui_canvas_Dialog(object):
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
-        self.Description.setText(_translate("Dialog", "A QGIS plugin to visualise a datacube"))
+        self.Description.setText(_translate("Dialog", "A QGIS plugin to "
+                                                      "visualise a datacube"))
         self.btn_extent.setText(_translate("Dialog", "Set canvas extent"))
         self.label_5.setText(_translate("Dialog", "North"))
         self.label_7.setText(_translate("Dialog", "West"))

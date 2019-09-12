@@ -41,7 +41,8 @@ from .canvas_dialog import Ui_canvas_Dialog
 from .search_dialog import Ui_search_Dialog
 from .shapefile_dialog import Ui_shapefile_Dialog
 
-# This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
+# This loads your .ui file so that PyQt can populate your plugin with the
+# elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'assimila_datacube_dialog_base.ui'))
 
@@ -57,10 +58,6 @@ class AssimilaDatacCubeDialog(QtWidgets.QDialog, FORM_CLASS):
         super(AssimilaDatacCubeDialog, self).__init__(parent)
         self.setupUi(self)
         self.iface = iface
-        #self.nesw_radioButton.toggled.connect(self.on_nesw_radioButton_clicked)
-        #self.set_canvas_radioButton.toggled.connect(self.on_set_canvas_radioButton_clicked)
-        #self.search_tile_radioButton.toggled.connect(self.on_search_tile_radioButton_clicked)
-
     
     def add_coordinates_to_UI(self, coordinates):
         """
@@ -87,9 +84,11 @@ class AssimilaDatacCubeDialog(QtWidgets.QDialog, FORM_CLASS):
         This will allow the user to select location of directory of the key file.
         """
         # Gets directory for the keyfile - default: /users/{user_name}/Documents
-        self.keyfile = QFileDialog.getOpenFileName(None, self.tr("Open File"),
+        self.keyfile = QFileDialog.getOpenFileName(None,
+                                                   self.tr("Open File"),
                                                     # os.path.dirname(__file__),
-                                                    os.path.join(expanduser("~"), "Documents"), # default location
+                                                    os.path.join(expanduser("~"),
+                                                                 "Documents"),
                                                     ("(*.assimila_dq)"))
         # Displays in lineEdit                             
         self.lineEdit.setText(self.keyfile.__getitem__(0))    
@@ -103,12 +102,14 @@ class AssimilaDatacCubeDialog(QtWidgets.QDialog, FORM_CLASS):
         raster file will save to.
         """
         # Gets default directory for the temporary raster file location
-        self.dir = QFileDialog.getExistingDirectory(None, self.tr("Open Directory"),
-                                                    #"Users\Jenny\AppData\Local\Temp",
-                                                    os.path.join(expanduser("~"), "Documents"),
+        self.dir = QFileDialog.getExistingDirectory(None,
+                                                    self.tr("Open Directory"),
+                                                    os.path.join(expanduser("~"),
+                                                                 "Documents"),
                                                     QFileDialog.ShowDirsOnly 
-                                                    | QFileDialog.DontResolveSymlinks)
+                                                    | QFileDialog
+                                                    .DontResolveSymlinks)
 
-        # Displays in lineEdit   "Users\Jenny\AppData\Local\Temp"                        
+        # Displays in lineEdit
         self.lineEdit_2.setText(self.dir)
         
