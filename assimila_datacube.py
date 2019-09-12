@@ -455,12 +455,12 @@ class AssimilaDatacCube:
         map_canvas.setMinimumSize(450, 250)
 
         # Gets the base map from the server and ensures only that layer is displayed              
-        raster = self.iface.addRasterLayer("url='https://server.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer' layer='0'", "tmp", "arcgismapserver")
-        map_canvas_layer_list = [raster, raster] 
+        self.raster = self.iface.addRasterLayer("url='https://server.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer' layer='0'", "tmp", "arcgismapserver")
+        map_canvas_layer_list = [self.raster, self.raster] 
         map_canvas.setLayers(map_canvas_layer_list)
 
         # Formats the layer
-        map_canvas.setExtent(raster.extent()) # map layer extent
+        map_canvas.setExtent(self.raster.extent()) # map layer extent
         map_canvas.zoomScale(400000000000000) # scaling for tmp raster
         map_canvas.show()
         
@@ -483,8 +483,8 @@ class AssimilaDatacCube:
         canvas.setMinimumSize(460, 250)
 
         # Gets the base map from the server and ensures only that layer is displayed       
-        raster = self.iface.addRasterLayer("url='https://server.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer' layer='0'", "tmp", "arcgismapserver")
-        canvas_layer_list = [raster, raster] 
+        #raster = self.iface.addRasterLayer("url='https://server.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer' layer='0'", "tmp", "arcgismapserver")
+        canvas_layer_list = [self.raster, self.raster] 
         canvas.setLayers(canvas_layer_list)
 
         # Sets the coordinate reference system
@@ -503,7 +503,7 @@ class AssimilaDatacCube:
         r.setFillColor(QColor(255, 0, 0, 50)) #R,G,B,Transparency
         r.setWidth(3)
         canvas.zoomWithCenter(north-south,east-west,True)
-        canvas.setExtent(raster.extent())
+        canvas.setExtent(self.raster.extent())
         canvas.zoomToFullExtent()
         canvas.zoomScale(2000000000) # scaling for tmp raster
         #canvas.zoomWithCenter(north-south,east-west,True)
@@ -583,9 +583,13 @@ class AssimilaDatacCube:
         west = round(min(x_list), 2)
         #print(y_list)
 
-        return north, east, south, west        
+        return north, east, south, west  
 
 
+    def get_change(self, button, method):
+        if button.isChecked():
+            method()
+ 
     def run(self):
         """
         This prepares the user interface of the plugin and the performs the events 
@@ -613,7 +617,6 @@ class AssimilaDatacCube:
         
         # If there exists a shapefile on the canvas then will get coordinates from that polygon
         #self.use_shapefile_layer()
-        
 
         # Clears the values from previous run
         self.dlg.lineEdit.clear() #keyfile
@@ -654,11 +657,11 @@ class AssimilaDatacCube:
         # Links the Radio buttons and datetime widgets
         self.dlg.multi_radioButton.toggled.connect(lambda: self.radio_btn_state(self.dlg.single_radioButton, self.dlg.dateTimeEdit_1, self.dlg.dateTimeEdit_2))
 
-        # Links the radio buttons to their actions once clicked
-        self.dlg.nesw_radioButton.toggled.connect(self.on_nesw_radioButton_clicked)
-        self.dlg.set_canvas_radioButton.toggled.connect(self.on_set_canvas_radioButton_clicked)
-        self.dlg.search_tile_radioButton.toggled.connect(self.on_search_tile_radioButton_clicked)
-        self.dlg.shapefile_radioButton.toggled.connect(self.on_shapefile_radioButton_clicked)
+        # Links the radio buttons to their actions once clicked, radioButtons must be connected first before checking their status by calling get_change()
+        self.dlg.nesw_radioButton.toggled.connect(lambda: self.get_change(self.dlg.nesw_radioButton, self.on_nesw_radioButton_clicked))
+        self.dlg.set_canvas_radioButton.toggled.connect(lambda: self.get_change(self.dlg.set_canvas_radioButton, self.on_set_canvas_radioButton_clicked))
+        self.dlg.search_tile_radioButton.toggled.connect(lambda: self.get_change(self.dlg.search_tile_radioButton, self.on_search_tile_radioButton_clicked))
+        self.dlg.shapefile_radioButton.toggled.connect(lambda: self.get_change(self.dlg.shapefile_radioButton, self.on_shapefile_radioButton_clicked ))
 
         # Show the dialog
         self.dlg.show()
