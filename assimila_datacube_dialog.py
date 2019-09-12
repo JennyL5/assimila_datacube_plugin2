@@ -87,17 +87,13 @@ class AssimilaDatacCubeDialog(QtWidgets.QDialog, FORM_CLASS):
         This will allow the user to select location of directory of the key file.
         """
         # Gets directory for the keyfile - default: /users/{user_name}/Documents
-        self.dir = QFileDialog.getExistingDirectory(None, self.tr("Open Directory"),
+        self.keyfile = QFileDialog.getOpenFileName(None, self.tr("Open File"),
                                                     # os.path.dirname(__file__),
                                                     os.path.join(expanduser("~"), "Documents"), # default location
-                                                    QFileDialog.ShowDirsOnly 
-                                                    | QFileDialog.DontResolveSymlinks)
-
-        # Appends the key file name .assimila_dq to the directory path
-        self.key_file = os.path.join(self.dir, ".assimila_dq")       
-
+                                                    ("(*.assimila_dq)"))
         # Displays in lineEdit                             
-        self.lineEdit.setText(self.key_file)   
+        self.lineEdit.setText(self.keyfile.__getitem__(0))    
+
 
     @pyqtSlot()
     def on_btn_browse_rasterfile_clicked(self):
