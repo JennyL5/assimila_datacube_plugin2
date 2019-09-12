@@ -646,7 +646,8 @@ class AssimilaDatacCube:
         
         # Display dropdown for subproducts
         self.dlg.subproducts_comboBox.addItem('rfe') # Defaulting 1st item Subprodusct is 'rfe'
-        
+        self.dlg.products_comboBox.currentTextChanged.connect(self.subproduct_selectionchange) # For updating the subproduct
+
          # For updating the subproduct
         self.dlg.subproducts_comboBox.removeItem(1) # Removing default subproduct value of 'rfe'
 
